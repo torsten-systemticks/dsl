@@ -394,12 +394,15 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (ELEMENT_STYLE_BACKGROUND_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
                         new ElementStyleParser().parseBackground(getContext(ElementStyleDslContext.class), tokens);
-
+                        parserListener.onParsedColor(lineNumber);
+                        
                     } else if ((ELEMENT_STYLE_COLOUR_TOKEN.equalsIgnoreCase(firstToken) || ELEMENT_STYLE_COLOR_TOKEN.equalsIgnoreCase(firstToken)) && inContext(ElementStyleDslContext.class)) {
                         new ElementStyleParser().parseColour(getContext(ElementStyleDslContext.class), tokens);
+                        parserListener.onParsedColor(lineNumber);
 
                     } else if (ELEMENT_STYLE_STROKE_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
                         new ElementStyleParser().parseStroke(getContext(ElementStyleDslContext.class), tokens);
+                        parserListener.onParsedColor(lineNumber);
 
                     } else if (ELEMENT_STYLE_SHAPE_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
                         new ElementStyleParser().parseShape(getContext(ElementStyleDslContext.class), tokens);
@@ -437,6 +440,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if ((RELATIONSHIP_STYLE_COLOUR_TOKEN.equalsIgnoreCase(firstToken) || RELATIONSHIP_STYLE_COLOR_TOKEN.equalsIgnoreCase(firstToken)) && inContext(RelationshipStyleDslContext.class)) {
                         new RelationshipStyleParser().parseColour(getContext(RelationshipStyleDslContext.class), tokens);
+                        parserListener.onParsedColor(lineNumber);
 
                     } else if (RELATIONSHIP_STYLE_DASHED_TOKEN.equalsIgnoreCase(firstToken) && inContext(RelationshipStyleDslContext.class)) {
                         new RelationshipStyleParser().parseDashed(getContext(RelationshipStyleDslContext.class), tokens);

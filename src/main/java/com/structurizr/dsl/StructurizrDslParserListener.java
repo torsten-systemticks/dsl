@@ -12,4 +12,6 @@ public interface StructurizrDslParserListener {
 	
 	default void onParsedModelElement(int lineNumber, String identifier, Element item) { }
 	
+	default void onParsedColor(int linenumber) { }
+	
 }
