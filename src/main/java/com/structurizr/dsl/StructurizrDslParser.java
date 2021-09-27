@@ -556,7 +556,8 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         new FilteredViewParser().parse(getContext(), tokens);
 
                     } else if (tokens.size() > 2 && RELATIONSHIP_TOKEN.equals(tokens.get(1)) && inContext(DynamicViewDslContext.class)) {
-                        new DynamicViewContentParser().parseRelationship(getContext(DynamicViewDslContext.class), tokens);
+                        Relationship relationship = new DynamicViewContentParser().parseRelationship(getContext(DynamicViewDslContext.class), tokens);
+                        parserListener.onParsedRelationShip(lineNumber, identifier, relationship);
 
                     } else if (DslContext.CONTEXT_START_TOKEN.equalsIgnoreCase(firstToken) && inContext(DynamicViewDslContext.class)) {
                         startContext(new DynamicViewParallelSequenceDslContext(getContext(DynamicViewDslContext.class)));

@@ -1,6 +1,7 @@
 package com.structurizr.dsl;
 
 import com.structurizr.model.Element;
+import com.structurizr.model.Relationship;
 import com.structurizr.model.StaticStructureElement;
 import com.structurizr.view.DynamicView;
 
@@ -13,8 +14,9 @@ final class DynamicViewContentParser extends AbstractParser {
     private static final int DESCRIPTION_INDEX = 3;
     private static final int TECHNOLOGY_INDEX = 4;
 
-    void parseRelationship(DynamicViewDslContext context, Tokens tokens) {
+    Relationship parseRelationship(DynamicViewDslContext context, Tokens tokens) {
         // <identifier> -> <identifier> [description] [technology]
+        Relationship relationship = null;
 
         DynamicView view = context.getView();
 
@@ -58,10 +60,12 @@ final class DynamicViewContentParser extends AbstractParser {
         }
 
         if (!sourceElement.hasEfferentRelationshipWith(destinationElement) && !destinationElement.hasEfferentRelationshipWith(sourceElement)) {
-            new ExplicitRelationshipParser().parse(context, tokens);
+            relationship = new ExplicitRelationshipParser().parse(context, tokens);
         }
 
         view.add((StaticStructureElement)sourceElement, description, technology, (StaticStructureElement)destinationElement);
+
+        return relationship;
     }
 
 }
