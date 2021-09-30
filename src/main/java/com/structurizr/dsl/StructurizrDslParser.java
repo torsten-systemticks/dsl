@@ -201,7 +201,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         // do nothing
 
                     } else if (DslContext.CONTEXT_END_TOKEN.equals(tokens.get(0))) {
-                        parserListener.onEndContext(lineNumber, contextStack.peek());
+                        parserListener.onEndContext(lineNumber, contextStack.peek().getClass().getSimpleName());
                         endContext();
 
                     } else if (tokens.size() > 2 && RELATIONSHIP_TOKEN.equals(tokens.get(1)) && (inContext(ModelDslContext.class) || inContext(EnterpriseDslContext.class) || inContext(CustomElementDslContext.class) || inContext(PersonDslContext.class) || inContext(SoftwareSystemDslContext.class) || inContext(ContainerDslContext.class) || inContext(ComponentDslContext.class) || inContext(DeploymentEnvironmentDslContext.class) || inContext(DeploymentNodeDslContext.class) || inContext(InfrastructureNodeDslContext.class) || inContext(SoftwareSystemInstanceDslContext.class) || inContext(ContainerInstanceDslContext.class))) {
