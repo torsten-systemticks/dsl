@@ -14,4 +14,5 @@ public interface StructurizrDslParserListener {
 	
 	default void onParsedColor(int linenumber) { }
 	
+	default void onEndContext(int linenumber, DslContext context) { }
 }

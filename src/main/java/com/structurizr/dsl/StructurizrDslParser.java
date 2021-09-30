@@ -201,6 +201,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         // do nothing
 
                     } else if (DslContext.CONTEXT_END_TOKEN.equals(tokens.get(0))) {
+                        parserListener.onEndContext(lineNumber, contextStack.peek());
                         endContext();
 
                     } else if (tokens.size() > 2 && RELATIONSHIP_TOKEN.equals(tokens.get(1)) && (inContext(ModelDslContext.class) || inContext(EnterpriseDslContext.class) || inContext(CustomElementDslContext.class) || inContext(PersonDslContext.class) || inContext(SoftwareSystemDslContext.class) || inContext(ContainerDslContext.class) || inContext(ComponentDslContext.class) || inContext(DeploymentEnvironmentDslContext.class) || inContext(DeploymentNodeDslContext.class) || inContext(InfrastructureNodeDslContext.class) || inContext(SoftwareSystemInstanceDslContext.class) || inContext(ContainerInstanceDslContext.class))) {
@@ -813,7 +814,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
     private void endContext() throws StructurizrDslParserException {
         if (!contextStack.empty()) {
-            DslContext context = contextStack.pop();
+            DslContext context = contextStack.pop();            
             context.end();
         } else {
             throw new StructurizrDslParserException("Unexpected end of context");
