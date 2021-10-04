@@ -17,4 +17,6 @@ public interface StructurizrDslParserListener {
 	default void onParsedColor(File file, int linenumber) { }
 	
 	default void onEndContext(File file, int linenumber, String context) { }
+
+	default void onInclude(File file) { }
 }
