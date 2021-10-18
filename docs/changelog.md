@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.16.0 (unreleased)
+
+- Adds the implied relationships functionality for custom elements.
+- "addDefaultElements" will now also add any connected custom elements.
+- Adds better support for custom elements when using element expressions.
+- Adds a `description` keyword for setting the description on elements.
+- Adds a `technology` keyword for setting the technology on containers, components, deployment nodes, and infrastructure nodes.
+
+## 1.15.0 (2nd October 2021)
+
+- Adds support for specifying element style icons and the branding logo as a HTTPS/HTTP URL.
+- Adds support for relationships from deployment nodes to infrastructure nodes.
+- Fixes an issue where `this` didn't work when defining relationships inside deployment/infrastructure nodes.
+- Removes the restriction that `include *` must be on a line of its own inside view definitions.
+
 ## 1.14.0 (19th September 2021)
 
 - __Breaking change__: Adds support for software system/container instances in multiple deployment groups.

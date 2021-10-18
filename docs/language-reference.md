@@ -226,7 +226,7 @@ The Structurizr DSL supports a number of expressions for use when including or e
 - `-><identifier>`: the specified element plus afferent couplings
 - `<identifier>->`: the specified element plus efferent couplings
 - `-><identifier>->`: the specified element plus afferent and efferent couplings
-- `element.type==<type>`: elements of the specified type (Person|SoftwareSystem|Container|Component|DeploymentNode|InfrastructureNode|SoftwareSystemInstance|ContainerInstance)
+- `element.type==<type>`: elements of the specified type (Person|SoftwareSystem|Container|Component|DeploymentNode|InfrastructureNode|SoftwareSystemInstance|ContainerInstance|Custom)
 - `element.tag==<tag>[,tag]`: all elements that have all of the specified tags
 - `element.tag!=<tag>[,tag]`: all elements that do not have all of the specified tags
 - `element=-><identifier>`: the specified element plus afferent couplings
@@ -1010,7 +1010,7 @@ The `include` keyword can be used to include elements or relationships.
 To include elements in a view, use one or more `include` statements inside the block defining the view.
 
 ```
-include <*|identifier|expression> [identifier|expression...]
+include <*|identifier|expression> [*|identifier|expression...]
 ```
 
 Elements can either be specified using individual identifiers, the wildcard identifier (`*`), or a property expression. Please note that including elements will also include the relationships between those elements.
@@ -1025,7 +1025,6 @@ The wildcard identifier (`*`) operates differently depending upon the type of di
 - Dynamic view: (not applicable)
 - Deployment view: Include all deployment nodes, infrastructure nodes, and container instances defined within the deployment environment and (optional) software system in scope.
 
-Element expressions are currently only supported on system landscape, system context, container, and component views.
 They provide a way to include elements based upon some basic conditional logic, as follows:
 
 - `element.tag==<tag>,[tag]`: include elements that have all of the specified tags
@@ -1061,7 +1060,6 @@ To exclude a relationship in a view, you can specify an individual relationship 
 exclude <identifier|expression> [identifier|expression...]
 ```
 
-Property expressions are currently only supported on system landscape, system context, container, and component views.
 They provide a way to exclude relationships based upon some basic conditional logic, as follows:
 
 - `relationship.tag==<tag>,[tag]`: exclude relationships that have all of the specified tags
@@ -1141,7 +1139,7 @@ The `element` keyword is used to define an element style. All nested properties 
 ```
 element <tag> {
     shape <Box|RoundedBox|Circle|Ellipse|Hexagon|Cylinder|Pipe|Person|Robot|Folder|WebBrowser|MobileDevicePortrait|MobileDeviceLandscape|Component>
-    icon <file|data uri>
+    icon <file|url>
     width <integer>
     height <integer>
     background <#rrggbb>
@@ -1156,7 +1154,9 @@ element <tag> {
 }
 ```
 
-Please note that element styles are designed to work with the Structurizr cloud service/on-premises installation, and may not be fully supported by the PlantUML, Mermaid, etc export formats. 
+Please note that element styles are designed to work with the Structurizr cloud service/on-premises installation, and may not be fully supported by the PlantUML, Mermaid, etc export formats.
+
+Important note: see [Help - Icons](https://structurizr.com/help/icons) if you are specifying an element style icon via a URL. 
 
             
 ### relationship style
@@ -1205,10 +1205,12 @@ The `branding` keyword allows you to define some custom branding that should be 
 
 ```
 branding {
-    logo <file|data uri>
+    logo <file|url>
     font <name> [url]
 }
 ```
+
+Important note: see [Help - Icons](https://structurizr.com/help/icons) if you are specifying a branding logo via a URL.
 
 ### terminology
 
