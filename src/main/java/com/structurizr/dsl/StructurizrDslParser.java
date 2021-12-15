@@ -109,6 +109,15 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         context.copyFrom(identifersRegister);
     }
 
+    public void parse(String dsl, File file) throws StructurizrDslParserException {
+        if (StringUtils.isNullOrEmpty(dsl)) {
+            throw new StructurizrDslParserException("A DSL fragment must be specified");
+        }
+
+        List<String> lines = Arrays.asList(dsl.split("\\r?\\n"));
+        parse(lines, file);
+    }
+
     /**
      * Parses the specified Structurizr DSL file(s), adding the parsed content to the workspace.
      * If "path" represents a single file, that single file will be parsed.
