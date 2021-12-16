@@ -18,5 +18,5 @@ public interface StructurizrDslParserListener {
 	
 	default void onEndContext(File file, int linenumber, String context) { }
 
-	default void onInclude(File hostFile, File referencedFile) { }
+	default void onInclude(File hostFile, int linenumber, File referencedFile, String path) { }
 }

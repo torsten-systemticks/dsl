@@ -709,7 +709,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         if (!restricted || tokens.get(1).startsWith("https://")) {
                             IncludedDslContext context = new IncludedDslContext(file);
                             new IncludeParser().parse(context, tokens);
-                            parserListener.onInclude(file, context.getFile());
+                            parserListener.onInclude(file, lineNumber, context.getFile(), tokens.get(1));
                             parse(context.getLines(), context.getFile());
                             includeInDslSourceLines = false;
                         }
