@@ -870,6 +870,7 @@ The `views` block can contain the following:
 - [themes](#themes)
 - [branding](#branding)
 - [terminology](#terminology)
+- [properties](#properties)
 
 ### systemLandscape view
 
@@ -1198,6 +1199,7 @@ relationship <tag> {
     color #777777
     colour #777777
     dashed <true|false>
+    style <solid|dashed|dotted>
     routing <Direct|Orthogonal|Curved>
     fontSize <integer>
     width <integer>
