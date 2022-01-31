@@ -1,11 +1,7 @@
-workspace extends https://raw.githubusercontent.com/structurizr/dsl/master/examples/extend/workspace.json {
-    name "A new name"
-    description "A new description"
+workspace "Getting Started" "This is a model of my software system." {
 
     model {
-        softwareSystem = softwareSystem "Software System" {
-            webapp = container "Web Application"
-        }
+        !include https://raw.githubusercontent.com/structurizr/dsl/master/src/test/dsl/include/model.dsl
     }
 
     views {
@@ -26,5 +22,5 @@ workspace extends https://raw.githubusercontent.com/structurizr/dsl/master/examp
             }
         }
     }
-    
+
 }
