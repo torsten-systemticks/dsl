@@ -4,10 +4,13 @@ import com.structurizr.Workspace;
 import com.structurizr.model.Element;
 import com.structurizr.model.Relationship;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 abstract class DslContext {
+
+    private static final String PLUGINS_DIRECTORY_NAME = "plugins";
 
     static final String CONTEXT_START_TOKEN = "{";
     static final String CONTEXT_END_TOKEN = "}";
@@ -15,7 +18,7 @@ abstract class DslContext {
     private Workspace workspace;
     private boolean extendingWorkspace;
 
-    protected IdentifiersRegister identifersRegister = new IdentifiersRegister();
+    protected IdentifiersRegister identifiersRegister = new IdentifiersRegister();
 
     Workspace getWorkspace() {
         return workspace;
@@ -34,30 +37,30 @@ abstract class DslContext {
     }
 
     void setIdentifierRegister(IdentifiersRegister identifersRegister) {
-        this.identifersRegister = identifersRegister;
+        this.identifiersRegister = identifersRegister;
     }
 
     Element getElement(String identifier) {
-        Element element = identifersRegister.getElement(identifier.toLowerCase());
+        Element element = identifiersRegister.getElement(identifier.toLowerCase());
 
-        if (element == null && identifersRegister.getIdentifierScope() == IdentifierScope.Hierarchical) {
+        if (element == null && identifiersRegister.getIdentifierScope() == IdentifierScope.Hierarchical) {
             if (this instanceof ModelItemDslContext) {
                 ModelItemDslContext modelItemDslContext = (ModelItemDslContext)this;
                 if (modelItemDslContext.getModelItem() instanceof Element) {
                     Element parent = (Element)modelItemDslContext.getModelItem();
                     while (parent != null && element == null) {
-                        String parentIdentifier = identifersRegister.findIdentifier(parent);
+                        String parentIdentifier = identifiersRegister.findIdentifier(parent);
 
-                        element = identifersRegister.getElement(parentIdentifier + "." + identifier);
+                        element = identifiersRegister.getElement(parentIdentifier + "." + identifier);
                         parent = parent.getParent();
                     }
                 }
             } else if (this instanceof DeploymentEnvironmentDslContext) {
                 DeploymentEnvironmentDslContext deploymentEnvironmentDslContext = (DeploymentEnvironmentDslContext)this;
                 DeploymentEnvironment deploymentEnvironment = new DeploymentEnvironment(deploymentEnvironmentDslContext.getEnvironment());
-                String parentIdentifier = identifersRegister.findIdentifier(deploymentEnvironment);
+                String parentIdentifier = identifiersRegister.findIdentifier(deploymentEnvironment);
 
-                element = identifersRegister.getElement(parentIdentifier + "." + identifier);
+                element = identifiersRegister.getElement(parentIdentifier + "." + identifier);
             }
         }
 
@@ -65,7 +68,29 @@ abstract class DslContext {
     }
 
     Relationship getRelationship(String identifier) {
-        return identifersRegister.getRelationship(identifier.toLowerCase());
+        return identifiersRegister.getRelationship(identifier.toLowerCase());
+    }
+
+    protected Class loadClass(String fqn, File dslFile) throws Exception {
+        File pluginsDirectory = new File(dslFile.getParent(), PLUGINS_DIRECTORY_NAME);
+        URL[] urls = new URL[0];
+
+        if (pluginsDirectory.exists()) {
+            File[] jarFiles = pluginsDirectory.listFiles((dir, name) -> name.endsWith(".jar"));
+            if (jarFiles != null) {
+                urls = new URL[jarFiles.length];
+                for (int i = 0; i < jarFiles.length; i++) {
+                    try {
+                        urls[i] = jarFiles[i].toURI().toURL();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        URLClassLoader childClassLoader = new URLClassLoader(urls, getClass().getClassLoader());
+        return childClassLoader.loadClass(fqn);
     }
 
     void end() {

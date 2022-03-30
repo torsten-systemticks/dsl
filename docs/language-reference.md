@@ -62,7 +62,7 @@ __Please note that what you see here may not be available in the Structurizr CLI
 - Lines are processed in order.
 - Tokens must be separated by whitespace, but the quantity of whitespace/indentation isn't important.
 - Keywords are case-insensitive (e.g. you can use `softwareSystem` or `softwaresystem`).
-- Double quote characters (`"..."`) are optional when a property contains no whitespace.
+- Double quote characters (`"..."`) are optional when a property/expression contains no whitespace.
 - Opening curly brace symbols (`{`) must be on the same line (i.e. the last token of the statement, not on a line of their own).
 - Closing curly brace symbols (`}`) must be on a line of their own.
 - Opening/closing braces are only required when adding child content.
@@ -201,22 +201,25 @@ A value of `false` disables implied relationship creation, while `true` creates 
 
 ## Includes
 
-The `!include` keyword can be used to include another file, to provide some degree of modularity, and to reuse definition fragments between workspaces.
+The `!include` keyword can be used to include one or more files, to provide some degree of modularity, and to reuse definition fragments between workspaces.
+The content of any included files is simply inlined into the parent document, in the order the files are discovered.
 
 ```
-!include <file|url>
+!include <file|directory|url>
 ```
 
-The file must be a relative path, located within the same directory as the parent file, or a subdirectory of it. For example:
+- file: a single local file, specified by a relative path, located within the same directory as the parent file or a subdirectory of it
+- file: a local directory containing one or more DSL files, specified by a relative path, located within the same directory as the parent file or a subdirectory of it
+- url: a HTTPS URL pointing to a single DSL file
+
+Some examples are:
 
 ```
-!include child.dsl
-!include subdirectory/child.dsl
+!include people.dsl
+!include model/people.dsl
+!include model
+!include https://example.com/model/people.dsl
 ``` 
-
-Alternatively, a HTTPS URL pointing to a single DSL file can be used.
-
-The content of any included files is simply inlined into the parent document. 
 
 ## Constants
 
@@ -232,10 +235,11 @@ Constant names may only contain the following characters: `a-zA-Z0-9-_.`
 
 The Structurizr DSL supports a number of expressions for use when including or excluding elements/relationships on views.
 
-- `-><identifier>`: the specified element plus afferent couplings
-- `<identifier>->`: the specified element plus efferent couplings
-- `-><identifier>->`: the specified element plus afferent and efferent couplings
+- `-><identifier|expression>`: the specified element(s) plus afferent couplings
+- `<identifier|expression>->`: the specified element(s) plus efferent couplings
+- `-><identifier|expression>->`: the specified element(s) plus afferent and efferent couplings
 - `element.type==<type>`: elements of the specified type (Person|SoftwareSystem|Container|Component|DeploymentNode|InfrastructureNode|SoftwareSystemInstance|ContainerInstance|Custom)
+- `element.parent==<identifier>`: elements with the specified parent
 - `element.tag==<tag>[,tag]`: all elements that have all of the specified tags
 - `element.tag!=<tag>[,tag]`: all elements that do not have all of the specified tags
 - `element==-><identifier>`: the specified element plus afferent couplings
@@ -426,7 +430,7 @@ Permitted children:
 ### group
 
 The `group` keyword provides a way to define a named grouping of elements, which will be rendered as a boundary around those elements.
-See [groups.dsl](../examples/groups.dsl) for an example.
+See [groups.dsl](../src/test/dsl/groups.dsl) for an example.
 
 ```
 group <name> {
@@ -572,7 +576,7 @@ The `deploymentGroup` keyword provides a way to define a named deployment group.
 deploymentGroup <name>
 ```
 
-When software system/container instances are added to a deployment environment, all of the relationships between these elements are automatically replicated between *all* instances. Deployment groups provide a way to restrict the scope in which relationships are replicated. See [deployment-groups.dsl](../examples/deployment-groups.dsl) for an example.  
+When software system/container instances are added to a deployment environment, all of the relationships between these elements are automatically replicated between *all* instances. Deployment groups provide a way to restrict the scope in which relationships are replicated. See [deployment-groups.dsl](../src/test/dsl/deployment-groups.dsl) for an example.  
 
 ### deploymentNode
 
@@ -644,6 +648,8 @@ In addition to the software system's tags, the following tags are added by defau
 
 - `Software System Instance`
 
+Permitted children:
+
 - [-> (relationship)](#relationship)
 - [description](#description)
 - [tags](#tags)
@@ -667,6 +673,8 @@ The `identifier` must represent a container. `deploymentGroups` is a comma seper
 In addition to the container's tags, the following tags are added by default:
 
 - `Container Instance`
+
+Permitted children:
 
 - [-> (relationship)](#relationship)
 - [description](#description)
@@ -850,7 +858,7 @@ Or, if you're extending a JSON-based workspace, you can reference an element by 
 }
 ```
 
-See [ref.dsl](../examples/ref.dsl) for some usage examples.
+See [ref.dsl](../src/test/dsl/ref.dsl) for some usage examples.
 
 __Please note that `!ref` is currently an experimental feature.__ 
 
@@ -991,9 +999,9 @@ Unlike the other diagram types, Dynamic views are created by specifying the rela
 <identifier> -> <identifier> [description] [technology]
 ```
 
-With a dynamic view, you're showing _instances_ of relationships that are defined in the static model. For example, imagine that you have two software systems defined in the static model, with a single relationship between them described as "Sends data to". A dynamic view allows you to override the relationship description, to better describe the interaction in the context of the behaviour you're diagramming. See [dynamic.dsl](../examples/dynamic.dsl) for an example of this, and [Modelling multiple relationships](https://dev.to/simonbrown/modelling-multiple-relationships-51bf) for some tips on how to best model multiple relationships between two elements in order to avoid cluttering your static model. For convenience, if a relationship between the two elements does not exist in the static model, the DSL parser will automatically create it for you.
+With a dynamic view, you're showing _instances_ of relationships that are defined in the static model. For example, imagine that you have two software systems defined in the static model, with a single relationship between them described as "Sends data to". A dynamic view allows you to override the relationship description, to better describe the interaction in the context of the behaviour you're diagramming. See [dynamic.dsl](../src/test/dsl/dynamic.dsl) for an example of this, and [Modelling multiple relationships](https://dev.to/simonbrown/modelling-multiple-relationships-51bf) for some tips on how to best model multiple relationships between two elements in order to avoid cluttering your static model. For convenience, if a relationship between the two elements does not exist in the static model, the DSL parser will automatically create it for you.
 
-See [parallel.dsl](../examples/parallel.dsl) for an example of how to create dynamic diagrams with parallel sequences.
+See [parallel.dsl](../src/test/dsl/parallel.dsl) for an example of how to create dynamic diagrams with parallel sequences.
 
 Permitted children:
 
@@ -1104,10 +1112,10 @@ They provide a way to exclude relationships based upon some basic conditional lo
 - `relationship.tag==<tag>,[tag]`: exclude relationships that have all of the specified tags
 - `relationship.tag!=<tag>,[tag]`: exclude relationships that do not have all of the specified tags
 
-Alternatively, you can use the relationship expression syntax as follows:
+Alternatively, you can use the relationship expression syntax as follows (please note the double quotes surrounding the entire expression):
 
 ```
-exclude <*|identifier> -> <*|identifier> 
+exclude "<*|identifier> -> <*|identifier>" 
 ```
 
 The combinations of parameters are:
@@ -1298,7 +1306,7 @@ users {
 The `!docs` keyword can be used to attach Markdown/AsciiDoc documentation to the parent context (either the workspace, or a software system).
 
 ```
-!docs <path>
+!docs <path> <fully qualified class name>
 ```
 
 The path must be a relative path, located within the same directory as the parent file, or a subdirectory of it. For example:
@@ -1307,14 +1315,20 @@ The path must be a relative path, located within the same directory as the paren
 !docs subdirectory
 ``` 
 
-All Markdown and AsciiDoc files in this directory (and sub-directories) will be imported, alphabetically according to the filename. Each file must represent a separate documentation section, and the second level heading (`## Section Title` in Markdown and `== Section Title` in AsciiDoc) will be used as the section name. 
+By default, the [com.structurizr.documentation.importer.DefaultDocumentationImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/documentation/importer/DefaultDocumentationImporter.java) class will be used to import documentation as follows:
+
+- All Markdown and AsciiDoc files in the given directory will be imported, alphabetically according to the filename.
+- Each file must represent a separate documentation section, and the second level heading (`## Section Title` in Markdown and `== Section Title` in AsciiDoc) will be used as the section name.
+- All images in the given directory (and sub-directories) are also imported into the workspace.
+
+The above behaviour can be customised by specifying the fully qualified class name of your own implementation of [DocumentationImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/documentation/importer/DocumentationImporter.java), which needs to be on the DSL classpath or installed as a JAR file in the `plugins` directory next to your DSL file.
 
 ## Architecture decision records (ADRs)
 
 The `!adrs` keyword can be used to attach Markdown/AsciiDoc ADRs to the parent context (either the workspace, or a software system).
 
 ```
-!adrs <path>
+!adrs <path> <fully qualified class name>
 ```
 
 The path must be a relative path, located within the same directory as the parent file, or a subdirectory of it. For example:
@@ -1323,6 +1337,10 @@ The path must be a relative path, located within the same directory as the paren
 !adrs subdirectory
 ``` 
 
-All Markdown and AsciiDoc files in this directory (and sub-directories) will be imported, alphabetically according to the filename.
-The files must have been created by [adr-tools](https://github.com/npryce/adr-tools), or at least follow the same format. 
+By default, the [com.structurizr.documentation.importer.AdrToolsDecisionImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/documentation/importer/AdrToolsDecisionImporter.java) class will be used to import ADRs as follows:
 
+- All Markdown files in this directory will be imported, alphabetically according to the filename.
+- The files must have been created by [adr-tools](https://github.com/npryce/adr-tools), or at least follow the same format. 
+- All images in the given directory (and sub-directories) are also imported into the workspace.
+
+The above behaviour can be customised by specifying the fully qualified class name of your own implementation of [DocumentationImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/documentation/importer/DocumentationImporter.java), which needs to be on the DSL classpath or installed as a JAR file in the `plugins` directory next to your DSL file.
