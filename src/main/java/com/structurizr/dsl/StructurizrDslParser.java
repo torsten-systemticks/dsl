@@ -48,7 +48,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
      */
     public StructurizrDslParser(StructurizrDslParserListener _parserListener) {
         contextStack = new Stack<>();
-        identifersRegister = new IdentifiersRegister();
+        identifiersRegister = new IdentifiersRegister();
         constants = new HashMap<>();
         parserListener = _parserListener;
     }
@@ -354,7 +354,6 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         registerIdentifier(identifier, group);
                         parserListener.onParsedModelElement(lineNumber, identifier, group);
 
-                    } else if (TAGS_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class)) {
                     } else if (TAGS_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && !getContext(ModelItemDslContext.class).hasGroup()) {
                         new ModelItemParser().parseTags(getContext(ModelItemDslContext.class), tokens);
 
