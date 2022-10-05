@@ -49,3 +49,14 @@ jar {
     }
 }
 
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.structurizr'
+            artifactId = 'dsl'
+            version = '1.21.0'
+
+            from components.java
+        }
+    }
+}
