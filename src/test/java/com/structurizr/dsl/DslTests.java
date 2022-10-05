@@ -824,9 +824,30 @@ class DslTests extends AbstractTests {
     }
 
     @Test
+    void test_hierarchicalIdentifiers() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/hierarchical-identifiers.dsl"));
+
+        Workspace workspace = parser.getWorkspace();
+        assertEquals(0, workspace.getModel().getSoftwareSystemWithName("B").getRelationships().size());
+    }
+
+    @Test
     void test_hierarchicalIdentifiersAndDeploymentNodes() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("src/test/dsl/hierarchical-identifiers-and-deployment-nodes.dsl"));
+        parser.parse(new File("src/test/dsl/hierarchical-identifiers-and-deployment-nodes-1.dsl"));
+    }
+
+    @Test
+    void test_hierarchicalIdentifiersAndDeploymentNodes_WhenSoftwareSystemNameClashes() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/hierarchical-identifiers-and-deployment-nodes-2.dsl"));
+    }
+
+    @Test
+    void test_hierarchicalIdentifiersAndDeploymentNodes_WhenSoftwareContainerClashes() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/hierarchical-identifiers-and-deployment-nodes-3.dsl"));
     }
 
     @Test
@@ -850,7 +871,6 @@ class DslTests extends AbstractTests {
         StructurizrDslParser parser = new StructurizrDslParser();
         parser.parse(new File("src/test/dsl/script-external.dsl"));
 
-        assertNotNull(parser.getWorkspace().getModel().getPersonWithName("JavaScript"));
         assertNotNull(parser.getWorkspace().getModel().getPersonWithName("Groovy"));
         assertNotNull(parser.getWorkspace().getModel().getPersonWithName("Kotlin"));
         assertNotNull(parser.getWorkspace().getModel().getPersonWithName("Ruby"));
@@ -861,7 +881,6 @@ class DslTests extends AbstractTests {
         StructurizrDslParser parser = new StructurizrDslParser();
         parser.parse(new File("src/test/dsl/script-inline.dsl"));
 
-        assertNotNull(parser.getWorkspace().getModel().getPersonWithName("JavaScript"));
         assertNotNull(parser.getWorkspace().getModel().getPersonWithName("Groovy"));
         assertNotNull(parser.getWorkspace().getModel().getPersonWithName("Kotlin"));
         assertNotNull(parser.getWorkspace().getModel().getPersonWithName("Ruby"));
@@ -901,6 +920,62 @@ class DslTests extends AbstractTests {
     void test_excludeRelationships() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
         parser.parse(new File("src/test/dsl/exclude-relationships.dsl"));
+    }
+
+    @Test
+    void test_urlNotPermittedInGroup() throws Exception {
+        try {
+            StructurizrDslParser parser = new StructurizrDslParser();
+            parser.parse(new File("src/test/dsl/group-url.dsl"));
+            fail();
+        } catch (StructurizrDslParserException e) {
+            assertEquals("Unexpected tokens at line 6: url \"https://example.com\"", e.getMessage());
+        }
+    }
+
+    @Test
+    void test_multipleWorkspaceTokens_ThrowsAnException() throws Exception {
+        try {
+            StructurizrDslParser parser = new StructurizrDslParser();
+            parser.parse(new File("src/test/dsl/multiple-workspace-tokens.dsl"));
+            fail();
+        } catch (StructurizrDslParserException e) {
+            assertEquals("Multiple workspaces are not permitted in a DSL definition at line 9: workspace {", e.getMessage());
+        }
+    }
+
+    @Test
+    void test_multipleModelTokens_ThrowsAnException() throws Exception {
+        try {
+            StructurizrDslParser parser = new StructurizrDslParser();
+            parser.parse(new File("src/test/dsl/multiple-model-tokens.dsl"));
+            fail();
+        } catch (StructurizrDslParserException e) {
+            assertEquals("Multiple models are not permitted in a DSL definition at line 7: model {", e.getMessage());
+        }
+    }
+
+    @Test
+    void test_multipleViewTokens_ThrowsAnException() throws Exception {
+        try {
+            StructurizrDslParser parser = new StructurizrDslParser();
+            parser.parse(new File("src/test/dsl/multiple-view-tokens.dsl"));
+            fail();
+        } catch (StructurizrDslParserException e) {
+            assertEquals("Multiple view sets are not permitted in a DSL definition at line 13: views {", e.getMessage());
+        }
+    }
+
+    @Test
+    void test_dynamicViewWithExplicitRelationships() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/dynamic-view-with-explicit-relationships.dsl"));
+    }
+
+    @Test
+    void test_dynamicViewWithCustomElements() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/dynamic-view-with-custom-elements.dsl"));
     }
 
 }

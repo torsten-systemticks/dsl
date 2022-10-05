@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.21.0 (unreleased to Maven Central)
+
+- Fixes #153 (Error when deploymentNode identifier is the same as a softwareSystem or container identifier)
+- Adds support for custom elements on dynamic views.
+- The DSL parser will now throw an error if the enterprise is set more than once (#159).
+
+## 1.20.0 (15th August 2022)
+
+- Fixes #130 (Incorrect displaying of multiple urls within a container).
+- Added more validation for supported icon types (PNG and JPG, not SVG).
+- Adds support for `instances` as child of deploymentNode (#133).
+- Fixes #142 (Invalid object scoping strategy).
+- Adds support for explicitly specifying the relationships that should be added to dynamic views.
+- Adds support for setting workspace properties.
+
 ## 1.19.1 (30th March 2022)
 
 - `title` now works for custom views.

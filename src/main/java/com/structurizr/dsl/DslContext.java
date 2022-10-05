@@ -41,9 +41,14 @@ abstract class DslContext {
     }
 
     Element getElement(String identifier) {
-        Element element = identifiersRegister.getElement(identifier.toLowerCase());
+        return getElement(identifier, null);
+    }
 
-        if (element == null && identifiersRegister.getIdentifierScope() == IdentifierScope.Hierarchical) {
+    Element getElement(String identifier, Class<? extends Element> type) {
+        Element element = null;
+        identifier = identifier.toLowerCase();
+
+        if (identifiersRegister.getIdentifierScope() == IdentifierScope.Hierarchical) {
             if (this instanceof ModelItemDslContext) {
                 ModelItemDslContext modelItemDslContext = (ModelItemDslContext)this;
                 if (modelItemDslContext.getModelItem() instanceof Element) {
@@ -53,6 +58,8 @@ abstract class DslContext {
 
                         element = identifiersRegister.getElement(parentIdentifier + "." + identifier);
                         parent = parent.getParent();
+
+                        element = checkElementType(element, type);
                     }
                 }
             } else if (this instanceof DeploymentEnvironmentDslContext) {
@@ -61,6 +68,24 @@ abstract class DslContext {
                 String parentIdentifier = identifiersRegister.findIdentifier(deploymentEnvironment);
 
                 element = identifiersRegister.getElement(parentIdentifier + "." + identifier);
+            }
+
+            if (element == null) {
+                // default to finding a top-level element
+                element = identifiersRegister.getElement(identifier);
+            }
+        } else {
+            element = identifiersRegister.getElement(identifier);
+        }
+
+        element = checkElementType(element, type);
+        return element;
+    }
+
+    Element checkElementType(Element element, Class<? extends Element> type) {
+        if (element != null && type != null) {
+            if (!element.getClass().isAssignableFrom(type)) {
+                element = null;
             }
         }
 

@@ -209,7 +209,7 @@ The content of any included files is simply inlined into the parent document, in
 ```
 
 - file: a single local file, specified by a relative path, located within the same directory as the parent file or a subdirectory of it
-- file: a local directory containing one or more DSL files, specified by a relative path, located within the same directory as the parent file or a subdirectory of it
+- directory: a local directory containing one or more DSL files, specified by a relative path, located within the same directory as the parent file or a subdirectory of it
 - url: a HTTPS URL pointing to a single DSL file
 
 Some examples are:
@@ -415,7 +415,7 @@ Permitted children:
 The `enterprise` keyword provides a way to define a named "enterprise" (e.g. an organisation) within the top-level model. Any people or software systems defined inside this block will be deemed to be "internal", while all others will be deemed to be "external". On System Landscape and System Context diagrams, an enterprise is represented as a dashed box. Only a single enterprise can be defined within a model.
 
 ```
-enterprise <name> {
+enterprise [name] {
     ...
 }
 ```
@@ -602,6 +602,7 @@ Permitted children:
 - [-> (relationship)](#relationship)
 - [description](#description)
 - [technology](#technology)
+- [instances](#instances)
 - [tags](#tags)
 - [url](#url)
 - [properties](#properties)
@@ -807,6 +808,14 @@ description "Description"
 technology "Technology"
 ```
 
+### instances
+
+`instances` is used to set the number of instances of a deployment node.
+
+```
+instances "4"
+```
+
 ### url
 
 `url` is used to set a URL on an element or relationship.
@@ -817,7 +826,7 @@ url https://example.com
 
 ### properties
 
-The `properties` block is used to define one or more name/value properties for an element or relationship.
+The `properties` block is used to define one or more name/value properties.
 
 ```
 properties {
@@ -996,7 +1005,8 @@ The first property defines the scope of the view, and therefore what can be adde
 Unlike the other diagram types, Dynamic views are created by specifying the relationships that should be added to the view, within the `dynamic` block, as follows:
 
 ```
-<identifier> -> <identifier> [description] [technology]
+<element identifier> -> <element identifier> [description] [technology]
+<relationship identifier> [description]
 ```
 
 With a dynamic view, you're showing _instances_ of relationships that are defined in the static model. For example, imagine that you have two software systems defined in the static model, with a single relationship between them described as "Sends data to". A dynamic view allows you to override the relationship description, to better describe the interaction in the context of the behaviour you're diagramming. See [dynamic.dsl](../src/test/dsl/dynamic.dsl) for an example of this, and [Modelling multiple relationships](https://dev.to/simonbrown/modelling-multiple-relationships-51bf) for some tips on how to best model multiple relationships between two elements in order to avoid cluttering your static model. For convenience, if a relationship between the two elements does not exist in the static model, the DSL parser will automatically create it for you.
@@ -1144,6 +1154,9 @@ The first property is the rank direction:
 
 The second property is the separation of ranks in pixels (default: `300`), while the third property is the separation of nodes in the same rank in pixels (default: `300`).
 
+Please note that if your DSL workspace does not explicitly define any views, the DSL parser will automatically create a default set of views for you, with auto-layout enabled.
+To change this behaviour, you can either (1) explicitly define your views or (2) use a script to disable automatic layout ([example](https://github.com/structurizr/dsl/tree/master/docs/cookbook/scripts#create-the-default-views-without-automatic-layout)).
+
 ### animation
 
 The `animation` keyword defines the animation for the specified view.
@@ -1290,6 +1303,7 @@ configuration {
 Permitted children:
 
 - [users](#users)
+- [properties](#properties)
 
 ### users
 
