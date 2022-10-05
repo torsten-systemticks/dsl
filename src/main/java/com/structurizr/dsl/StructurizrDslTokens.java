@@ -17,6 +17,7 @@ class StructurizrDslTokens {
     static final String NAME_TOKEN = "name";
     static final String DESCRIPTION_TOKEN = "description";
     static final String TECHNOLOGY_TOKEN = "technology";
+    static final String INSTANCES_TOKEN = "instances";
     static final String TAGS_TOKEN = "tags";
     static final String URL_TOKEN = "url";
     static final String PROPERTIES_TOKEN = "properties";
@@ -47,6 +48,7 @@ class StructurizrDslTokens {
     static final String ANIMATION_STEP_IN_VIEW_TOKEN = "animationStep";
     static final String AUTOLAYOUT_VIEW_TOKEN = "autolayout";
     static final String VIEW_TITLE_TOKEN = "title";
+    static final String VIEW_DESCRIPTION_TOKEN = "description";
     static final String STYLES_TOKEN = "styles";
     static final String BRANDING_TOKEN = "branding";
     static final String BRANDING_LOGO_TOKEN = "logo";
@@ -72,6 +74,7 @@ class StructurizrDslTokens {
     static final String RELATIONSHIP_STYLE_DASHED_TOKEN = "dashed";
     static final String RELATIONSHIP_STYLE_OPACITY_TOKEN = "opacity";
     static final String RELATIONSHIP_STYLE_ROUTING_TOKEN = "routing";
+    static final String RELATIONSHIP_STYLE_LINE_STYLE_TOKEN = "style";
     static final String RELATIONSHIP_STYLE_FONT_SIZE_TOKEN = "fontSize";
     static final String RELATIONSHIP_STYLE_WIDTH_TOKEN = "width";
     static final String RELATIONSHIP_STYLE_POSITION_TOKEN = "position";

@@ -30,7 +30,7 @@ class StructurizrDslFormatterTests extends AbstractTests {
     @Test
     void test_gettingstarted() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("examples/getting-started.dsl"));
+        parser.parse(new File("src/test/dsl/getting-started.dsl"));
         Workspace workspace = parser.getWorkspace();
 
         StructurizrDslFormatter formatter = new StructurizrDslFormatter();
@@ -62,7 +62,7 @@ class StructurizrDslFormatterTests extends AbstractTests {
     @Test
     void test_aws() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("examples/amazon-web-services.dsl"));
+        parser.parse(new File("src/test/dsl/amazon-web-services.dsl"));
         Workspace workspace = parser.getWorkspace();
 
         StructurizrDslFormatter formatter = new StructurizrDslFormatter();
@@ -76,7 +76,7 @@ class StructurizrDslFormatterTests extends AbstractTests {
                 "            WebApplication = container \"Web Application\" \"Allows employees to view and manage information regarding the veterinarians, the clients, and their pets.\" \"Java and Spring Boot\" \n" +
                 "            Database = container \"Database\" \"Stores information regarding the veterinarians, the clients, and their pets.\" \"Relational database schema\" \"Database\" \n" +
                 "        }\n" +
-                "        SpringPetClinic.WebApplication -> SpringPetClinic.Database \"Reads from and writes to\" \"JDBC/SSL\" \n" +
+                "        SpringPetClinic.WebApplication -> SpringPetClinic.Database \"Reads from and writes to\" \"MySQL Protocol/SSL\" \n" +
                 "\n" +
                 "        Live = deploymentEnvironment \"Live\" {\n" +
                 "            AmazonWebServices = deploymentNode \"Amazon Web Services\" \"\" \"\" \"Amazon Web Services - Cloud\" {\n" +
@@ -131,7 +131,7 @@ class StructurizrDslFormatterTests extends AbstractTests {
     @Test
     void test_bigbankplc() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("examples/big-bank-plc.dsl"));
+        parser.parse(new File("src/test/dsl/big-bank-plc.dsl"));
         Workspace workspace = parser.getWorkspace();
 
         StructurizrDslFormatter formatter = new StructurizrDslFormatter();
@@ -389,7 +389,7 @@ class StructurizrDslFormatterTests extends AbstractTests {
     @Test
     void test_frs() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("examples/financial-risk-system.dsl"));
+        parser.parse(new File("src/test/dsl/financial-risk-system.dsl"));
         Workspace workspace = parser.getWorkspace();
 
         StructurizrDslFormatter formatter = new StructurizrDslFormatter();

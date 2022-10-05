@@ -1,9 +1,50 @@
 # Changelog
 
-## 1.16.0 (unreleased)
+## 1.21.0 (unreleased to Maven Central)
+
+- Fixes #153 (Error when deploymentNode identifier is the same as a softwareSystem or container identifier)
+- Adds support for custom elements on dynamic views.
+- The DSL parser will now throw an error if the enterprise is set more than once (#159).
+
+## 1.20.0 (15th August 2022)
+
+- Fixes #130 (Incorrect displaying of multiple urls within a container).
+- Added more validation for supported icon types (PNG and JPG, not SVG).
+- Adds support for `instances` as child of deploymentNode (#133).
+- Fixes #142 (Invalid object scoping strategy).
+- Adds support for explicitly specifying the relationships that should be added to dynamic views.
+- Adds support for setting workspace properties.
+
+## 1.19.1 (30th March 2022)
+
+- `title` now works for custom views.
+- Adds `description` to set view descriptions.
+
+## 1.19.0 (23rd March 2022)
+
+- Uses the new documentation/ADR importers, and makes it possible to use a custom implementation via `!docs` and `!adrs`.
+
+## 1.18.0 (20th February 2022)
+
+- Removes backwards compatibility for unquoted expressions (e.g. `exclude src -> dest` - use `exclude "src -> dest"` instead).
+- Adds the ability to include/exclude relationships by the tag of source of destination elements (e.g. `exclude "* -> element.tag==Tag"`).
+- Adds support for directory based includes with `!include`.
+- Adds support for element expressions to be used in the afferent/efferent coupling expression (e.g. `exclude "->element.tag==Tag"`)
+- Adds support for element expressions of the form `element.parent==<identifier>`.
+- Fixes #113 (Excluding relationships with tags in a Deployment Diagram).
+
+## 1.17.0 (4th January 2022)
+
+- Adds support for extending deployment environments via the `!ref` keyword (issue #92).
+- Adds support for extending relationships via the `!ref` keyword (issue #93).
+- Fixes #94 (tabs cause parsing errors).
+- Adds support for different relationship line styles (solid, dashed, dotted).
+- Adds support for name/value properties on the view set.
+
+## 1.16.0 (26th November 2021)
 
 - Adds the implied relationships functionality for custom elements.
-- "addDefaultElements" will now also add any connected custom elements.
+- The "add default elements" feature (`include *`) will now also add any connected custom elements.
 - Adds better support for custom elements when using element expressions.
 - Adds a `description` keyword for setting the description on elements.
 - Adds a `technology` keyword for setting the technology on containers, components, deployment nodes, and infrastructure nodes.

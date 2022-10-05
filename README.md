@@ -2,13 +2,14 @@
 
 # Structurizr DSL
 
-This GitHub repository contains an implementation of the Structurizr DSL - a way to create Structurizr software architecture models based upon the [C4 model](https://c4model.com) using a textual domain specific language (DSL). The Structurizr DSL has appeared on the [ThoughtWorks Tech Radar - Techniques - Diagrams as code](https://www.thoughtworks.com/radar/techniques?blipid=202010027).
+This GitHub repository contains an implementation of the Structurizr DSL - a way to create Structurizr software architecture models based upon the [C4 model](https://c4model.com) using a textual domain specific language (DSL). The Structurizr DSL has appeared on the [ThoughtWorks Tech Radar - Techniques - Diagrams as code](https://www.thoughtworks.com/radar/techniques/diagrams-as-code).
 
 ##  Getting started
 
 * [Getting started with Structurizr Lite](https://dev.to/simonbrown/getting-started-with-structurizr-lite-27d0) (using the DSL)
 * [Getting started with the Structurizr CLI and DSL](https://github.com/structurizr/cli/blob/master/docs/getting-started.md)
 * [Structurizr DSL demo](https://structurizr.com/dsl)
+* [Diagrams as code 2.0](https://www.youtube.com/watch?v=Za1-v4Zkq5E) (video from GOTO Copenhagen 2021)
 
 ##  Reference
 
@@ -76,17 +77,18 @@ workspace {
 }
 ```
 
-## Tooling support
-
-Here are some tools designed to support the Structurizr DSL.
-
-* [Structurizr Lite](https://structurizr.com/help/lite)
-* [Structurizr CLI](https://github.com/structurizr/cli)
-* [VS Code extension - syntax highlighting and diagram previews](https://marketplace.visualstudio.com/items?itemName=systemticks.c4-dsl-extension) (please note that there are some known issues with the syntax highlighting - see [Divergences](https://gitlab.com/systemticks/c4-grammar/-/tree/master/extension#divergences) for more details, and [Examples](https://gitlab.com/systemticks/c4-grammar/-/tree/master/workspace) for examples that work correctly with the extension)
-* [VS Code extension - syntax highlighting](https://marketplace.visualstudio.com/items?itemName=ciarant.vscode-structurizr)
-
 ## Examples
 
 * [Getting started](https://structurizr.com/dsl?example=getting-started)
 * [Big Bank plc](https://structurizr.com/dsl?example=big-bank-plc)
 * [Amazon Web Services](https://structurizr.com/dsl?example=amazon-web-services)
+
+## Tooling support
+
+Here are some tools designed to support the Structurizr DSL.
+
+* [Structurizr Lite](https://structurizr.com/help/lite) (web-based rendering tool)
+* [c4viz](https://github.com/pmorch/c4viz) (web-based rendering tool)
+* [Structurizr CLI](https://github.com/structurizr/cli) (command line utilities)
+* [VS Code extension](https://marketplace.visualstudio.com/items?itemName=systemticks.c4-dsl-extension) (syntax highlighting and diagram previews; please note that there are some known issues with the syntax highlighting - see [Divergences](https://gitlab.com/systemticks/c4-grammar/-/tree/master/extension#divergences) for more details, and [Examples](https://gitlab.com/systemticks/c4-grammar/-/tree/master/workspace) for examples that work correctly with the extension)
+* [VS Code extension](https://marketplace.visualstudio.com/items?itemName=ciarant.vscode-structurizr) (syntax highlighting)
