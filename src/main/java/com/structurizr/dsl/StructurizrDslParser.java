@@ -417,6 +417,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         extendingWorkspace = !workspace.getModel().isEmpty();
                         startContext(new WorkspaceDslContext());
                         parsedTokens.add(WORKSPACE_TOKEN);
+                        parserListener.onParsedWorkspace(dslFile, lineNumber);
                     } else if (IMPLIED_RELATIONSHIPS_TOKEN.equalsIgnoreCase(firstToken) || IMPLIED_RELATIONSHIPS_TOKEN.substring(1).equalsIgnoreCase(firstToken)) {
                         new ImpliedRelationshipsParser().parse(getContext(), tokens);
 
@@ -433,6 +434,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                         startContext(new ModelDslContext());
                         parsedTokens.add(MODEL_TOKEN);
+                        parserListener.onParsedModel(dslFile, lineNumber);
 
                     } else if (VIEWS_TOKEN.equalsIgnoreCase(firstToken) && inContext(WorkspaceDslContext.class)) {
                         if (parsedTokens.contains(VIEWS_TOKEN)) {
@@ -441,6 +443,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                         startContext(new ViewsDslContext());
                         parsedTokens.add(VIEWS_TOKEN);
+                        parserListener.onParsedViews(dslFile, lineNumber);
 
                     } else if (BRANDING_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewsDslContext.class)) {
                         startContext(new BrandingDslContext(dslFile));
@@ -453,10 +456,12 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (STYLES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewsDslContext.class)) {
                         startContext(new StylesDslContext());
+                        parserListener.onParsedStyles(dslFile, lineNumber);
 
                     } else if (ELEMENT_STYLE_TOKEN.equalsIgnoreCase(firstToken) && inContext(StylesDslContext.class)) {
                         ElementStyle elementStyle = new ElementStyleParser().parseElementStyle(getContext(), tokens.withoutContextStartToken());
                         startContext(new ElementStyleDslContext(elementStyle, dslFile));
+                        parserListener.onParsedElementStyle(dslFile, lineNumber);
 
                     } else if (ELEMENT_STYLE_BACKGROUND_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
                         new ElementStyleParser().parseBackground(getContext(ElementStyleDslContext.class), tokens);
@@ -500,6 +505,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (RELATIONSHIP_STYLE_TOKEN.equalsIgnoreCase(firstToken) && inContext(StylesDslContext.class)) {
                         RelationshipStyle relationshipStyle = new RelationshipStyleParser().parseRelationshipStyle(getContext(), tokens.withoutContextStartToken());
                         startContext(new RelationshipStyleDslContext(relationshipStyle));
+                        parserListener.onParsedRelationShipStyle(dslFile, lineNumber);
 
                     } else if (RELATIONSHIP_STYLE_THICKNESS_TOKEN.equalsIgnoreCase(firstToken) && inContext(RelationshipStyleDslContext.class)) {
                         new RelationshipStyleParser().parseThickness(getContext(RelationshipStyleDslContext.class), tokens);
