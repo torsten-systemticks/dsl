@@ -883,7 +883,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         context.setIdentifierRegister(identifiersRegister);
         context.setExtendingWorkspace(extendingWorkspace);
         contextStack.push(context);
-        parserListener.onStartContext(dslFile, lineNumber, context);
+        parserListener.onStartContext(dslFile, lineNumber, context.hashCode(), context.getClass().getSimpleName());
     }
 
     private DslContext getContext() {
@@ -906,7 +906,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         if (!contextStack.empty()) {
             DslContext context = contextStack.pop();            
             context.end();
-            parserListener.onEndContext(dslFile, lineNumber, context);
+            parserListener.onEndContext(dslFile, lineNumber, context.hashCode(), context.getClass().getSimpleName());
         } else {
             throw new StructurizrDslParserException("Unexpected end of context");
         }
