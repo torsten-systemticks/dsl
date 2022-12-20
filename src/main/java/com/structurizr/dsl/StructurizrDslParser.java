@@ -211,6 +211,14 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (DslContext.CONTEXT_END_TOKEN.equals(tokens.get(0))) {
                         endContext();
 
+                    } else if (INCLUDE_FILE_TOKEN.equalsIgnoreCase(firstToken)) {
+                        if (!restricted || tokens.get(1).startsWith("https://")) {
+                            IncludedDslContext context = new IncludedDslContext(dslFile);
+                            new IncludeParser().parse(context, tokens);
+                            parse(context.getLines(), context.getFile());
+                            includeInDslSourceLines = false;
+                        }
+
                     } else if (tokens.size() > 2 && RELATIONSHIP_TOKEN.equals(tokens.get(1)) && (inContext(ModelDslContext.class) || inContext(EnterpriseDslContext.class) || inContext(CustomElementDslContext.class) || inContext(PersonDslContext.class) || inContext(SoftwareSystemDslContext.class) || inContext(ContainerDslContext.class) || inContext(ComponentDslContext.class) || inContext(DeploymentEnvironmentDslContext.class) || inContext(DeploymentNodeDslContext.class) || inContext(InfrastructureNodeDslContext.class) || inContext(SoftwareSystemInstanceDslContext.class) || inContext(ContainerInstanceDslContext.class))) {
                         Relationship relationship = new ExplicitRelationshipParser().parse(getContext(), tokens.withoutContextStartToken());
 
@@ -387,6 +395,15 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewsDslContext.class)) {
                         startContext(new PropertiesDslContext(workspace.getViews().getConfiguration()));
 
+                    } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewDslContext.class)) {
+                        startContext(new PropertiesDslContext(getContext(ViewDslContext.class).getView()));
+
+                    } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
+                        startContext(new PropertiesDslContext(getContext((ElementStyleDslContext.class)).getStyle()));
+
+                    } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(RelationshipStyleDslContext.class)) {
+                        startContext(new PropertiesDslContext(getContext((RelationshipStyleDslContext.class)).getStyle()));
+
                     } else if (inContext(PropertiesDslContext.class)) {
                         new PropertyParser().parse(getContext(PropertiesDslContext.class), tokens);
 
@@ -456,6 +473,9 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (ELEMENT_STYLE_STROKE_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
                         new ElementStyleParser().parseStroke(getContext(ElementStyleDslContext.class), tokens);
+
+                    } else if (ELEMENT_STYLE_STROKE_WIDTH_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
+                        new ElementStyleParser().parseStrokeWidth(getContext(ElementStyleDslContext.class), tokens);
 
                     } else if (ELEMENT_STYLE_SHAPE_TOKEN.equalsIgnoreCase(firstToken) && inContext(ElementStyleDslContext.class)) {
                         new ElementStyleParser().parseShape(getContext(ElementStyleDslContext.class), tokens);
@@ -628,9 +648,6 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (inContext(CustomViewAnimationDslContext.class)) {
                         new CustomViewAnimationStepParser().parse(getContext(CustomViewAnimationDslContext.class), tokens);
 
-                    } else if (AUTOLAYOUT_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(CustomViewDslContext.class)) {
-                        new AutoLayoutParser().parse(getContext(CustomViewDslContext.class), tokens);
-
                     } else if (INCLUDE_IN_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(StaticViewDslContext.class)) {
                         new StaticViewContentParser().parseInclude(getContext(StaticViewDslContext.class), tokens);
 
@@ -661,46 +678,22 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (inContext(DeploymentViewAnimationDslContext.class)) {
                         new DeploymentViewAnimationStepParser().parse(getContext(DeploymentViewAnimationDslContext.class), tokens);
 
-                    } else if (AUTOLAYOUT_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(StaticViewDslContext.class)) {
-                        new AutoLayoutParser().parse(getContext(StaticViewDslContext.class), tokens);
+                    } else if (AUTOLAYOUT_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewDslContext.class)) {
+                        new AutoLayoutParser().parse(getContext(ViewDslContext.class), tokens);
 
-                    } else if (AUTOLAYOUT_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(DynamicViewDslContext.class)) {
-                        new AutoLayoutParser().parse(getContext(DynamicViewDslContext.class), tokens);
+                    } else if (VIEW_TITLE_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewDslContext.class)) {
+                        new ViewParser().parseTitle(getContext(ViewDslContext.class), tokens);
 
-                    } else if (AUTOLAYOUT_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentViewDslContext.class)) {
-                        new AutoLayoutParser().parse(getContext(DeploymentViewDslContext.class), tokens);
-
-                    } else if (VIEW_TITLE_TOKEN.equalsIgnoreCase(firstToken) && inContext(CustomViewDslContext.class)) {
-                        new ViewParser().parseTitle(getContext(CustomViewDslContext.class), tokens);
-
-                    } else if (VIEW_TITLE_TOKEN.equalsIgnoreCase(firstToken) && inContext(StaticViewDslContext.class)) {
-                        new ViewParser().parseTitle(getContext(StaticViewDslContext.class), tokens);
-
-                    } else if (VIEW_TITLE_TOKEN.equalsIgnoreCase(firstToken) && inContext(DynamicViewDslContext.class)) {
-                        new ViewParser().parseTitle(getContext(DynamicViewDslContext.class), tokens);
-
-                    } else if (VIEW_TITLE_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentViewDslContext.class)) {
-                        new ViewParser().parseTitle(getContext(DeploymentViewDslContext.class), tokens);
-
-                    } else if (VIEW_DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(CustomViewDslContext.class)) {
-                        new ViewParser().parseDescription(getContext(CustomViewDslContext.class), tokens);
-
-                    } else if (VIEW_DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(StaticViewDslContext.class)) {
-                        new ViewParser().parseDescription(getContext(StaticViewDslContext.class), tokens);
-
-                    } else if (VIEW_DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(DynamicViewDslContext.class)) {
-                        new ViewParser().parseDescription(getContext(DynamicViewDslContext.class), tokens);
-
-                    } else if (VIEW_DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentViewDslContext.class)) {
-                        new ViewParser().parseDescription(getContext(DeploymentViewDslContext.class), tokens);
+                    } else if (VIEW_DESCRIPTION_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewDslContext.class)) {
+                        new ViewParser().parseDescription(getContext(ViewDslContext.class), tokens);
 
                     } else if (inContext(DynamicViewDslContext.class)) {
                         new DynamicViewContentParser().parseRelationship(getContext(DynamicViewDslContext.class), tokens);
 
-                    } else if (THEME_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewsDslContext.class)) {
+                    } else if (THEME_TOKEN.equalsIgnoreCase(firstToken) && (inContext(ViewsDslContext.class) || inContext(StylesDslContext.class))) {
                         new ThemeParser().parseTheme(getContext(), tokens);
 
-                    } else if (THEMES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewsDslContext.class)) {
+                    } else if (THEMES_TOKEN.equalsIgnoreCase(firstToken) && (inContext(ViewsDslContext.class) || inContext(StylesDslContext.class))) {
                         new ThemeParser().parseThemes(getContext(), tokens);
 
                     } else if (TERMINOLOGY_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewsDslContext.class)) {
@@ -738,14 +731,6 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (inContext(UsersDslContext.class)) {
                         new UserRoleParser().parse(getContext(), tokens);
-
-                    } else if (INCLUDE_FILE_TOKEN.equalsIgnoreCase(firstToken)) {
-                        if (!restricted || tokens.get(1).startsWith("https://")) {
-                            IncludedDslContext context = new IncludedDslContext(dslFile);
-                            new IncludeParser().parse(context, tokens);
-                            parse(context.getLines(), context.getFile());
-                            includeInDslSourceLines = false;
-                        }
 
                     } else if (DOCS_TOKEN.equalsIgnoreCase(firstToken) && inContext(WorkspaceDslContext.class)) {
                         if (!restricted) {
@@ -815,8 +800,6 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                 lineNumber++;
             } catch (Exception e) {
-                e.printStackTrace();
-
                 if (e.getMessage() != null) {
                     throw new StructurizrDslParserException(e.getMessage(), lineNumber, line);
                 } else {

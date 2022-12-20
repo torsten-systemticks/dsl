@@ -49,6 +49,8 @@ __Please note that what you see here may not be available in the Structurizr CLI
             - [styles](#styles)
                 - [element](#element-style)
                 - [relationship](#relationship-style)
+                - [theme](#theme)
+                - [themes](#themes)
             - [theme](#theme)
             - [themes](#themes)
             - [branding](#branding)
@@ -82,7 +84,7 @@ In addition, workspaces are subject to the following rules:
 
 ## String substitution
 
-String substitution will take place on any text specified using the `${NAME}` syntax, where `NAME` corresponds to a [constant](#constants) or an environment variable.
+String substitution will take place on any text specified within a token using the `${NAME}` syntax, where `NAME` corresponds to a [constant](#constants) or an environment variable.
 For example:
 
 ```
@@ -147,7 +149,13 @@ Now we can use these identifiers when creating relationships, specifying which e
 p -> ss "Uses"
 ```
 
-Identifiers are only needed where you plan to reference the element/relationship.
+Relationships can also be assigned an identifier.
+
+```
+rel = p -> ss "Uses"
+```
+
+Identifiers are only needed where you plan to reference the element/relationship. The following characters may be used when defining an identifier: `a-zA-Z_0-9`
 
 ### Identifier scope
 
@@ -794,7 +802,7 @@ tags "Tag 1" "Tag 2"
 
 ### description
 
-`description` is used to set the description on an element.
+`description` is used to set the description on an element or view.
 
 ```
 description "Description"
@@ -915,6 +923,8 @@ Permitted children:
 - [autoLayout](#autoLayout)
 - [animation](#animation)
 - [title](#title)
+- [description](#description)
+- [properties](#properties)
 
 ### systemContext view
 
@@ -933,6 +943,8 @@ Permitted children:
 - [autoLayout](#autoLayout)
 - [animation](#animation)
 - [title](#title)
+- [description](#description)
+- [properties](#properties)
 
 ### container view
 
@@ -951,6 +963,8 @@ Permitted children:
 - [autoLayout](#autoLayout)
 - [animation](#animation)
 - [title](#title)
+- [description](#description)
+- [properties](#properties)
 
 ### component view
 
@@ -969,6 +983,8 @@ Permitted children:
 - [autoLayout](#autoLayout)
 - [animation](#animation)
 - [title](#title)
+- [description](#description)
+- [properties](#properties)
 
 ### filtered view
 
@@ -1009,7 +1025,7 @@ Unlike the other diagram types, Dynamic views are created by specifying the rela
 <relationship identifier> [description]
 ```
 
-With a dynamic view, you're showing _instances_ of relationships that are defined in the static model. For example, imagine that you have two software systems defined in the static model, with a single relationship between them described as "Sends data to". A dynamic view allows you to override the relationship description, to better describe the interaction in the context of the behaviour you're diagramming. See [dynamic.dsl](../src/test/dsl/dynamic.dsl) for an example of this, and [Modelling multiple relationships](https://dev.to/simonbrown/modelling-multiple-relationships-51bf) for some tips on how to best model multiple relationships between two elements in order to avoid cluttering your static model. For convenience, if a relationship between the two elements does not exist in the static model, the DSL parser will automatically create it for you.
+With a dynamic view, you're showing _instances_ of relationships that are defined in the static model. For example, imagine that you have two software systems defined in the static model, with a single relationship between them described as "Sends data to". A dynamic view allows you to override the relationship description, to better describe the interaction in the context of the behaviour you're diagramming. See [dynamic.dsl](../src/test/dsl/dynamic.dsl) for an example of this, and [Modelling multiple relationships](https://dev.to/simonbrown/modelling-multiple-relationships-51bf) for some tips on how to best model multiple relationships between two elements in order to avoid cluttering your static model.
 
 See [parallel.dsl](../src/test/dsl/parallel.dsl) for an example of how to create dynamic diagrams with parallel sequences.
 
@@ -1017,6 +1033,8 @@ Permitted children:
 
 - [autoLayout](#autoLayout)
 - [title](#title)
+- [description](#description)
+- [properties](#properties)
 
 ### deployment view
 
@@ -1040,6 +1058,8 @@ Permitted children:
 - [autoLayout](#autoLayout)
 - [animation](#animation)
 - [title](#title)
+- [description](#description)
+- [properties](#properties)
 
 ### custom view
 
@@ -1057,6 +1077,9 @@ Permitted children:
 - [exclude](#exclude)
 - [autoLayout](#autoLayout)
 - [animation](#animation)
+- [title](#title)
+- [description](#description)
+- [properties](#properties)
 
 ### include
 
@@ -1206,15 +1229,19 @@ element <tag> {
     color <#rrggbb>
     colour <#rrggbb>
     stroke <#rrggbb>
+    strokeWidth <integer: 1-10>
     fontSize <integer>
     border <solid|dashed|dotted>
     opacity <integer: 0-100>
     metadata <true|false>
     description <true|false>
+    properties {
+        name value
+    }
 }
 ```
 
-Please note that element styles are designed to work with the Structurizr cloud service/on-premises installation, and may not be fully supported by the PlantUML, Mermaid, etc export formats.
+Please note that element styles are designed to work with the Structurizr cloud service/on-premises installation/Lite, and may not be fully supported by the PlantUML, Mermaid, etc export formats.
 
 Important note: see [Help - Icons](https://structurizr.com/help/icons) if you are specifying an element style icon via a URL. 
 
@@ -1228,17 +1255,19 @@ relationship <tag> {
     thickness <integer>
     color #777777
     colour #777777
-    dashed <true|false>
     style <solid|dashed|dotted>
     routing <Direct|Orthogonal|Curved>
     fontSize <integer>
     width <integer>
     position <integer: 0-100>
     opacity <integer: 0-100>
+    properties {
+        name value
+    }
 }
 ```
 
-Please note that relationship styles are designed to work with the Structurizr cloud service/on-premises installation, and may not be fully supported by the PlantUML, Mermaid, etc export formats. 
+Please note that relationship styles are designed to work with the Structurizr cloud service/on-premises installation/Lite, and may not be fully supported by the PlantUML, Mermaid, etc export formats. 
 
 ### theme
 

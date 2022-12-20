@@ -131,6 +131,9 @@ workspace "Name" "Description" {
     views {
 
         custom "CustomDiagram" "Title" "Description" {
+            title "Title"
+            description "Description"
+
             include box1 box2
 
             animation {
@@ -139,41 +142,94 @@ workspace "Name" "Description" {
             }
 
             autolayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         systemLandscape "SystemLandscape" "Description" {
+            title "Title"
+            description "Description"
+
             include *
             autoLayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         systemContext softwareSystem "SystemContext" "Description" {
+            title "Title"
+            description "Description"
+
             include *
             autoLayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         container softwareSystem "Containers" "Description" {
+            title "Title"
+            description "Description"
+
             include *
             autoLayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         component webApplication "Components" "Description" {
+            title "Title"
+            description "Description"
+
             include *
             autoLayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         dynamic webApplication "Dynamic" "Description" {
+            title "Title"
+            description "Description"
+
             user -> homePageController "Requests via web browser"
             autoLayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         deployment * developmentEnvironment "Deployment-Development" "Description" {
+            title "Title"
+            description "Description"
+
             include *
             autoLayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         deployment * "Live" "Deployment-Live" "Description" {
+            title "Title"
+            description "Description"
+
             include *
             autoLayout
+
+            properties {
+                "Name" "Value"
+            }
         }
 
         styles {
@@ -191,6 +247,9 @@ workspace "Name" "Description" {
                 opacity 50
                 metadata false
                 description false
+                properties {
+                    "Name" "Value"
+                }
             }
 
             relationship "Relationship" {
@@ -203,10 +262,17 @@ workspace "Name" "Description" {
                 width 400
                 position 50
                 opacity 50
+                properties {
+                    "Name" "Value"
+                }
             }
+
+            theme https://example.com/theme1
+            themes https://example.com/theme2 https://example.com/theme3
         }
 
-        themes https://example.com/theme1 https://example.com/theme2 https://example.com/theme3
+        theme https://example.com/theme1
+        themes https://example.com/theme2 https://example.com/theme3
 
         branding {
             logo logo.png
@@ -222,6 +288,10 @@ workspace "Name" "Description" {
             deploymentNode "Deployment Node"
             infrastructureNode "Infrastructure Node"
             relationship "Relationship"
+        }
+
+        properties {
+            "Name" "Value"
         }
     }
 

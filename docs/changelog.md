@@ -5,6 +5,11 @@
 - Fixes #153 (Error when deploymentNode identifier is the same as a softwareSystem or container identifier)
 - Adds support for custom elements on dynamic views.
 - The DSL parser will now throw an error if the enterprise is set more than once (#159).
+- Adds the ability to set name/value properties on element and relationship styles.
+- Adds support for setting element style stroke widths.
+- Adds name-value properties to views.
+- Adds support for using `theme` and `themes` inside the `styles` block.
+- __Breaking change__: Dynamic views will no longer create relationships that don't exist in the model.
 
 ## 1.20.0 (15th August 2022)
 
