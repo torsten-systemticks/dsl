@@ -230,7 +230,11 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                             IncludedDslContext context = new IncludedDslContext(dslFile);
                             new IncludeParser().parse(context, tokens);
                             parserListener.onInclude(dslFile, lineNumber, context.getFile(), tokens.get(1));
+                            int beforeIncludeLineNumber = lineNumber;
+                            File beforeIncludeDslFile = dslFile;
                             parse(context.getLines(), context.getFile());
+                            this.dslFile = beforeIncludeDslFile;
+                            this.lineNumber = beforeIncludeLineNumber;
                             includeInDslSourceLines = false;
                         }
 
