@@ -640,7 +640,8 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         parserListener.onParsedView(dslFile, lineNumber, view);
 
                     } else if (FILTERED_VIEW_TOKEN.equalsIgnoreCase(firstToken) && inContext(ViewsDslContext.class)) {
-                        new FilteredViewParser().parse(getContext(), tokens);
+                        FilteredView view = new FilteredViewParser().parse(getContext(), tokens);
+                        parserListener.onParsedFilteredView(dslFile, lineNumber, view.getKey());
 
                     } else if (tokens.size() > 2 && RELATIONSHIP_TOKEN.equals(tokens.get(1)) && inContext(DynamicViewDslContext.class)) {
                         new DynamicViewContentParser().parseRelationship(getContext(DynamicViewDslContext.class), tokens);

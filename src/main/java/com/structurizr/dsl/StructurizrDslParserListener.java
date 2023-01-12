@@ -9,7 +9,9 @@ import com.structurizr.view.View;
 public interface StructurizrDslParserListener {
 
 	default void onParsedView(File file, int lineNumber, View view) { }
-	
+
+	default void onParsedFilteredView(File file, int lineNumber, String filteredViewKey) { }
+
 	default void onParsedRelationShip(File file, int lineNumber, String identifier, Relationship relationship) { }
 	
 	default void onParsedModelElement(File flle, int lineNumber, String identifier, Element item) { }
