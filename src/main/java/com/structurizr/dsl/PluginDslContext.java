@@ -24,12 +24,17 @@ class PluginDslContext extends DslContext {
         try {
             Class pluginClass = loadClass(fullyQualifiedClassName, dslFile);
             StructurizrDslPlugin plugin = (StructurizrDslPlugin)pluginClass.getDeclaredConstructor().newInstance();
-            StructurizrDslPluginContext pluginContext = new StructurizrDslPluginContext(getWorkspace(), parameters);
+            StructurizrDslPluginContext pluginContext = new StructurizrDslPluginContext(dslFile, getWorkspace(), parameters);
             plugin.run(pluginContext);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error running plugin " + fullyQualifiedClassName + ", caused by " + e.getClass().getName() + ": " + e.getMessage());
         }
+    }
+
+    @Override
+    protected String[] getPermittedTokens() {
+        return new String[0];
     }
 
 }

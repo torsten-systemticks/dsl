@@ -1,12 +1,16 @@
 # Language reference
 
-The Structurizr DSL provides a way to define a software architecture model (based upon the [C4 model](https://c4model.com)) as text, using a domain specific language (DSL). The [Structurizr CLI](https://github.com/structurizr/cli) (command line interface) provides tooling to parse DSL workspace definitions, upload them to the Structurizr cloud service/on-premises installation, and export diagrams to other formats (e.g. PlantUML and WebSequenceDiagrams). See [https://structurizr.com/dsl](https://structurizr.com/dsl) for a demo of the DSL.
+The Structurizr DSL provides a way to define a software architecture model
+(based upon the [C4 model](https://c4model.com)) as text, using a domain specific language (DSL).
+The DSL is rendering tool independent, and to render diagrams you will need to use one of the tools listed at
+[Structurizr DSL - Rendering tools](https://github.com/structurizr/dsl#rendering-tools).
 
-__Please note that what you see here may not be available in the Structurizr CLI yet, but it will likely be available on the [Structurizr DSL demo page](https://structurizr.com/dsl).__
+Please see the [DSL cookbook](cookbook) for a tutorial guide to the Structurizr DSL.
 
 ## Table of contents
 
 - [General rules](#general-rules)
+- [Convention over configuration, useful defaults](#convention-over-configuration-useful-defaults)
 - [String substitution](#string-substitution)
 - [Comments](#comments)
 - [Identifiers](#identifiers)
@@ -70,7 +74,7 @@ __Please note that what you see here may not be available in the Structurizr CLI
 - Opening/closing braces are only required when adding child content.
 - Use `""` as a placeholder for an earlier optional property that you'd like to skip.
 - Tags are comma separated (e.g. `Tag 1,Tag 2,Tag 3`) - see [Structurizr - Notation](https://structurizr.com/help/notation) for details of how tags and styling works.
-- The Structurizr CLI will provide some default views and styles when they are not specified in your DSL - see [Structurizr CLI - Defaults](https://github.com/structurizr/cli/blob/master/docs/defaults.md) for details.
+- The Structurizr CLI will provide some default views and styles when they are not specified in your DSL - see [Convention over configuration, useful defaults](#convention-over-configuration-useful-defaults) for details.
 
 In addition, workspaces are subject to the following rules:
 
@@ -81,6 +85,40 @@ In addition, workspaces are subject to the following rules:
 - Deployment node names must be unique with their parent context.
 - Infrastructure node names must be unique with their parent context.
 - All relationships from a source element to a destination element must have a unique description.
+
+## Convention over configuration, useful defaults
+
+The DSL is designed to be as compact as possible.
+When used in conjunction with [Structurizr Lite](https://structurizr.com/help/lite)
+or the [Structurizr CLI](https://github.com/structurizr/cli),
+the following DSL fragment will automatically:
+
+- Create the [implied relationship](docs/cookbook/implied-relationships)
+between the ```user``` and ```softwareSystem``` elements.
+- Create three views with auto-layout enabled
+(1 x System Landscape, 1 x System Context, 1 x Container).
+- Add some default element styles from a theme.
+
+```
+workspace {
+
+    model {
+        user = person "User"
+        softwareSystem = softwareSystem "Software System" {
+            webapp = container "Web Application"
+            database = container "Database"
+         }
+
+        user -> webapp "Uses"
+        webapp -> database "Reads from and writes to"
+    }
+    
+    views {
+    	theme default
+    }
+
+}
+```
 
 ## String substitution
 
@@ -315,13 +353,18 @@ Parameters can be specified in the plugin body, for example.
 
 The named parameters are then available via the `getParameter(name)` method of the `StructurizrDslPluginContext`object.
 
-__Please note that `!plugin` is currently an experimental feature.__
-
 ### Scripts
 
-Scripts are like plugins, except they don't need to be compiled before use. JavaScript(*), Kotlin, Groovy, and Ruby are supported out of the box, and you can add more languages via the Java Scripting API. The workspace (again from the [Structurizr for Java library](https://github.com/structurizr/java)) is bound to a variable named `workspace`. Scripts can be used at any point in the DSL.
+Scripts are like plugins, except they don't need to be compiled before use. JavaScript(*), Kotlin, Groovy, and Ruby are supported out of the box, and you can add more languages via the Java Scripting API.
+Scripts can be used at any point in the DSL.
 
-__Please note that `!script` is currently an experimental feature.__
+The following variables are available from scripts:
+
+- `workspace`: the [Workspace](https://github.com/structurizr/java/blob/master/structurizr-core/src/com/structurizr/Workspace.java) object
+- `element`: the current [Element](https://github.com/structurizr/java/blob/master/structurizr-core/src/com/structurizr/model/Element.java) object, if the script is used within the scope of an element
+- `relationship`: the current [Relationship](https://github.com/structurizr/java/blob/master/structurizr-core/src/com/structurizr/model/Relationship.java) object, if the script is used within the scope of a relationship
+- `view`: the current [View](https://github.com/structurizr/java/blob/master/structurizr-core/src/com/structurizr/view/View.java) object, if the script is used within the scope of a view
+
 (*) Nashorn (the JVM JavaScript engine) is deprecated, see [https://openjdk.java.net/jeps/372](https://openjdk.java.net/jeps/372) for details.
 
 #### Inline scripts
@@ -497,10 +540,10 @@ The following tags are added by default:
 
 Permitted children:
 
-- [group](#group)
-- [container](#container)
 - [!docs](#documentation)
 - [!adrs](#architecture-decision-records-adrs)
+- [group](#group)
+- [container](#container)
 - [description](#description)
 - [tags](#tags)
 - [url](#url)
@@ -525,6 +568,8 @@ The following tags are added by default:
 
 Permitted children:
 
+- [!docs](#documentation)
+- [!adrs](#architecture-decision-records-adrs)
 - [group](#group)
 - [component](#component)
 - [description](#description)
@@ -819,9 +864,14 @@ technology "Technology"
 ### instances
 
 `instances` is used to set the number of instances of a deployment node.
+This can either be a static number, or a range (e.g. 0..1, 1..3, 5..10, 0..N, 0..*, 1..N, 1..*, etc).
 
 ```
 instances "4"
+```
+
+```
+instances "1..N"
 ```
 
 ### url
@@ -1217,7 +1267,8 @@ Permitted children:
 
 ### element style
 
-The `element` keyword is used to define an element style. All nested properties (`shape`, `icon`, etc) are optional, see [Structurizr - Notation](https://structurizr.com/help/notation) for details about how tags and styles work.
+The `element` keyword is used to define an element style.
+All nested properties (`shape`, `icon`, etc) are optional.
 
 ```
 element <tag> {
@@ -1225,10 +1276,10 @@ element <tag> {
     icon <file|url>
     width <integer>
     height <integer>
-    background <#rrggbb>
-    color <#rrggbb>
-    colour <#rrggbb>
-    stroke <#rrggbb>
+    background <#rrggbb|color name>
+    color <#rrggbb|color name>
+    colour <#rrggbb|color name>
+    stroke <#rrggbb|color name>
     strokeWidth <integer: 1-10>
     fontSize <integer>
     border <solid|dashed|dotted>
@@ -1241,20 +1292,28 @@ element <tag> {
 }
 ```
 
-Please note that element styles are designed to work with the Structurizr cloud service/on-premises installation/Lite, and may not be fully supported by the PlantUML, Mermaid, etc export formats.
+See the following links for details about how to use element styles:
 
-Important note: see [Help - Icons](https://structurizr.com/help/icons) if you are specifying an element style icon via a URL. 
+- [DSL cookbook - Element styles](https://github.com/structurizr/dsl/tree/master/docs/cookbook/element-styles)
+- [DSL cookbook - Groups](https://github.com/structurizr/dsl/tree/master/docs/cookbook/groups)
+- [Structurizr - Notation](https://structurizr.com/help/notation)
 
-            
+Notes:
+
+- Colors can be specified as a hex code (e.g. `#ffff00`) or a CSS/HTML named color (e.g. `yellow`).
+- See [Help - Icons](https://structurizr.com/help/icons) for information about HTTPS/CORS if you are using the Structurizr cloud service/on-premises installation/Lite and specifying an element style icon via a URL.
+- Element styles are designed to work with the Structurizr cloud service/on-premises installation/Lite, and may not be fully supported by the [PlantUML, Mermaid, etc export formats](https://github.com/structurizr/export) (e.g. shapes and icons).
+
 ### relationship style
 
-The `relationship` keyword is used to define a relationship style. All nested properties (`thickness`, `color`, etc) are optional, see [Structurizr - Notation](https://structurizr.com/help/notation)  for details about how tags and styles work.
+The `relationship` keyword is used to define a relationship style.
+All nested properties (`thickness`, `color`, etc) are optional.
 
 ```
 relationship <tag> {
     thickness <integer>
-    color #777777
-    colour #777777
+    color <#rrggbb|color name>
+    colour <#rrggbb|color name>
     style <solid|dashed|dotted>
     routing <Direct|Orthogonal|Curved>
     fontSize <integer>
@@ -1267,7 +1326,15 @@ relationship <tag> {
 }
 ```
 
-Please note that relationship styles are designed to work with the Structurizr cloud service/on-premises installation/Lite, and may not be fully supported by the PlantUML, Mermaid, etc export formats. 
+See the following links for details about how to use element styles:
+
+- [DSL cookbook - Relationship styles](https://github.com/structurizr/dsl/tree/master/docs/cookbook/relationship-styles)
+- [Structurizr - Notation](https://structurizr.com/help/notation)
+
+Notes:
+
+- Colors can be specified as a hex code (e.g. `#ffff00`) or a CSS/HTML named color (e.g. `yellow`).
+- Relationship styles are designed to work with the Structurizr cloud service/on-premises installation/Lite, and may not be fully supported by the [PlantUML, Mermaid, etc export formats](https://github.com/structurizr/export) (e.g. line/arrow colours). 
 
 ### theme
 
@@ -1300,11 +1367,13 @@ branding {
 }
 ```
 
-Important note: see [Help - Icons](https://structurizr.com/help/icons) if you are specifying a branding logo via a URL.
+Notes:
+
+- See [Help - Icons](https://structurizr.com/help/icons) for information about HTTPS/CORS if you are using the Structurizr cloud service/on-premises installation/Lite and specifying a branding icon via a URL.
 
 ### terminology
 
-The `terminology` keyword allows you to override the terminology used when rendering diagrams (this may not be supported in all rendering tools). See [Structurizr - Terminology](https://structurizr.com/help/terminology) for more details.
+The `terminology` keyword allows you to override the terminology used when rendering diagrams.
 
 ```
 terminology {
@@ -1346,7 +1415,7 @@ users {
 
 ## Documentation
 
-The `!docs` keyword can be used to attach Markdown/AsciiDoc documentation to the parent context (either the workspace, or a software system).
+The `!docs` keyword can be used to attach Markdown/AsciiDoc documentation to the parent context (either the workspace, a software system, or a container).
 
 ```
 !docs <path> <fully qualified class name>
@@ -1368,7 +1437,7 @@ The above behaviour can be customised by specifying the fully qualified class na
 
 ## Architecture decision records (ADRs)
 
-The `!adrs` keyword can be used to attach Markdown/AsciiDoc ADRs to the parent context (either the workspace, or a software system).
+The `!adrs` keyword can be used to attach Markdown/AsciiDoc ADRs to the parent context (either the workspace, a software system, or a container).
 
 ```
 !adrs <path> <fully qualified class name>

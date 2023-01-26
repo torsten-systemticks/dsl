@@ -102,7 +102,7 @@ class ElementStyleParserTests extends AbstractTests {
             parser.parseBackground(elementStyleDslContext(), tokens("background", "hex", "extra"));
             fail();
         } catch (Exception e) {
-            assertEquals("Too many tokens, expected: background <#rrggbb>", e.getMessage());
+            assertEquals("Too many tokens, expected: background <#rrggbb|color name>", e.getMessage());
         }
     }
 
@@ -112,14 +112,20 @@ class ElementStyleParserTests extends AbstractTests {
             parser.parseBackground(elementStyleDslContext(), tokens("background"));
             fail();
         } catch (Exception e) {
-            assertEquals("Expected: background <#rrggbb>", e.getMessage());
+            assertEquals("Expected: background <#rrggbb|color name>", e.getMessage());
         }
     }
 
     @Test
-    void test_parseBackground_SetsTheBackground() {
+    void test_parseBackground_SetsTheBackgroundWhenUsingAHexColourCode() {
         parser.parseBackground(elementStyleDslContext(), tokens("background", "#ff0000"));
         assertEquals("#ff0000", elementStyle.getBackground());
+    }
+
+    @Test
+    void test_parseBackground_SetsTheBackgroundWhenUsingAColourName() {
+        parser.parseBackground(elementStyleDslContext(), tokens("background", "yellow"));
+        assertEquals("#ffff00", elementStyle.getBackground());
     }
 
     @Test
@@ -128,7 +134,7 @@ class ElementStyleParserTests extends AbstractTests {
             parser.parseStroke(elementStyleDslContext(), tokens("stroke", "hex", "extra"));
             fail();
         } catch (Exception e) {
-            assertEquals("Too many tokens, expected: stroke <#rrggbb>", e.getMessage());
+            assertEquals("Too many tokens, expected: stroke <#rrggbb|color name>", e.getMessage());
         }
     }
 
@@ -138,14 +144,14 @@ class ElementStyleParserTests extends AbstractTests {
             parser.parseStroke(elementStyleDslContext(), tokens("stroke"));
             fail();
         } catch (Exception e) {
-            assertEquals("Expected: stroke <#rrggbb>", e.getMessage());
+            assertEquals("Expected: stroke <#rrggbb|color name>", e.getMessage());
         }
     }
 
     @Test
-    void test_parseStroke_SetsTheStroke() {
-        parser.parseStroke(elementStyleDslContext(), tokens("stroke", "#ff0000"));
-        assertEquals("#ff0000", elementStyle.getStroke());
+    void test_parseStroke_SetsTheStrokeWhenUsingAHexColourCode() {
+        parser.parseStroke(elementStyleDslContext(), tokens("stroke", "yellow"));
+        assertEquals("#ffff00", elementStyle.getStroke());
     }
 
     @Test
@@ -190,7 +196,7 @@ class ElementStyleParserTests extends AbstractTests {
             parser.parseColour(elementStyleDslContext(), tokens("colour", "hex", "extra"));
             fail();
         } catch (Exception e) {
-            assertEquals("Too many tokens, expected: colour <#rrggbb>", e.getMessage());
+            assertEquals("Too many tokens, expected: colour <#rrggbb|color name>", e.getMessage());
         }
     }
 
@@ -200,14 +206,20 @@ class ElementStyleParserTests extends AbstractTests {
             parser.parseColour(elementStyleDslContext(), tokens("colour"));
             fail();
         } catch (Exception e) {
-            assertEquals("Expected: colour <#rrggbb>", e.getMessage());
+            assertEquals("Expected: colour <#rrggbb|color name>", e.getMessage());
         }
     }
 
     @Test
-    void test_parseColour_SetsTheColour() {
+    void test_parseColour_SetsTheColourWhenUsingAHexColourCode() {
         parser.parseColour(elementStyleDslContext(), tokens("colour", "#ff0000"));
         assertEquals("#ff0000", elementStyle.getColor());
+    }
+
+    @Test
+    void test_parseColour_SetsTheColourWhenUsingColourName() {
+        parser.parseColour(elementStyleDslContext(), tokens("colour", "yellow"));
+        assertEquals("#ffff00", elementStyle.getColor());
     }
 
     @Test

@@ -10,7 +10,9 @@ class ExternalScriptDslContext extends ScriptDslContext {
     private final File dslFile;
     private final String filename;
 
-    ExternalScriptDslContext(File dslFile, String filename) {
+    ExternalScriptDslContext(DslContext parentContext, File dslFile, String filename) {
+        super(parentContext);
+
         this.dslFile = dslFile;
         this.filename = filename;
     }
@@ -31,6 +33,11 @@ class ExternalScriptDslContext extends ScriptDslContext {
             e.printStackTrace();
             throw new RuntimeException("Error running script at " + filename + ", caused by " + e.getClass().getName() + ": " + e.getMessage());
         }
+    }
+
+    @Override
+    protected String[] getPermittedTokens() {
+        return new String[0];
     }
 
 }

@@ -1,6 +1,24 @@
 # Changelog
 
-## 1.21.0 (unreleased to Maven Central)
+## 1.24.0 (unreleased)
+
+- More variables are exposed to scripts, based upon where the script is defined (`element`, `relationship`, `view`).
+- Improved the "unexpected tokens" error message to include a list of expected tokens.
+
+## 1.23.0 (15th January 2023)
+
+- Adds support for using (CSS/HTML) named colors instead of hex color codes.
+
+## 1.22.0 (5th January 2023)
+
+- Fixes #194 (Disabling the online DSL editor).
+- Adds support for deployment node instance ranges (e.g. 0..1, 1..3, 5..10, 0..N, 0..*, 1..N, 1..*, etc).
+
+## 1.21.1 (23rd December 2022)
+
+- Updated dependencies.
+
+## 1.21.0 (21st December 2022)
 
 - Fixes #153 (Error when deploymentNode identifier is the same as a softwareSystem or container identifier)
 - Adds support for custom elements on dynamic views.

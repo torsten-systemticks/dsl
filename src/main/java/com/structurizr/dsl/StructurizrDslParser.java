@@ -386,6 +386,9 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (URL_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && !getContext(ModelItemDslContext.class).hasGroup()) {
                         new ModelItemParser().parseUrl(getContext(ModelItemDslContext.class), tokens);
 
+                    } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(WorkspaceDslContext.class)) {
+                        startContext(new PropertiesDslContext(workspace));
+
                     } else if (PROPERTIES_TOKEN.equalsIgnoreCase(firstToken) && inContext(ConfigurationDslContext.class) && !getContext(ModelItemDslContext.class).hasGroup()) {
                         startContext(new PropertiesDslContext(getContext(ConfigurationDslContext.class).getWorkspace()));
 
@@ -742,6 +745,11 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                             new DocsParser().parse(getContext(SoftwareSystemDslContext.class), dslFile, tokens);
                         }
 
+                    } else if (DOCS_TOKEN.equalsIgnoreCase(firstToken) && inContext(ContainerDslContext.class)) {
+                        if (!restricted) {
+                            new DocsParser().parse(getContext(ContainerDslContext.class), dslFile, tokens);
+                        }
+
                     } else if (ADRS_TOKEN.equalsIgnoreCase(firstToken) && inContext(WorkspaceDslContext.class)) {
                         if (!restricted) {
                             new AdrsParser().parse(getContext(WorkspaceDslContext.class), dslFile, tokens);
@@ -750,6 +758,11 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (ADRS_TOKEN.equalsIgnoreCase(firstToken) && inContext(SoftwareSystemDslContext.class)) {
                         if (!restricted) {
                             new AdrsParser().parse(getContext(SoftwareSystemDslContext.class), dslFile, tokens);
+                        }
+
+                    } else if (ADRS_TOKEN.equalsIgnoreCase(firstToken) && inContext(ContainerDslContext.class)) {
+                        if (!restricted) {
+                            new AdrsParser().parse(getContext(ContainerDslContext.class), dslFile, tokens);
                         }
 
                     } else if (CONSTANT_TOKEN.equalsIgnoreCase(firstToken)) {
@@ -779,10 +792,10 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                             if (shouldStartContext(tokens)) {
                                 // assume this is an inline script
                                 String language = new ScriptParser().parseInline(tokens.withoutContextStartToken());
-                                startContext(new InlineScriptDslContext(language));
+                                startContext(new InlineScriptDslContext(getContext(), language));
                             } else {
                                 String filename = new ScriptParser().parseExternal(tokens);
-                                startContext(new ExternalScriptDslContext(dslFile, filename));
+                                startContext(new ExternalScriptDslContext(getContext(), dslFile, filename));
                                 endContext();
                             }
                         } else {
@@ -790,7 +803,30 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         }
 
                     } else {
-                        throw new StructurizrDslParserException("Unexpected tokens");
+                        String[] expectedTokens;
+                        if (getContext() == null) {
+                            if (getWorkspace() == null) {
+                                // the workspace hasn't yet been created
+                                expectedTokens = new String[]{
+                                        StructurizrDslTokens.WORKSPACE_TOKEN
+                                };
+                            } else {
+                                expectedTokens = new String[0];
+                            }
+                        } else {
+                            expectedTokens = getContext().getPermittedTokens();
+                        }
+
+                        if (expectedTokens.length > 0) {
+                            StringBuilder buf = new StringBuilder();
+                            for (String expectedToken : expectedTokens) {
+                                buf.append(expectedToken);
+                                buf.append(", ");
+                            }
+                            throw new StructurizrDslParserException("Unexpected tokens (expected: " + buf.substring(0, buf.length() - 2) + ")");
+                        } else {
+                            throw new StructurizrDslParserException("Unexpected tokens");
+                        }
                     }
                 }
 

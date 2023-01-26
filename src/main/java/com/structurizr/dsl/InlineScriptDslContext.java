@@ -5,10 +5,12 @@ import java.util.List;
 
 class InlineScriptDslContext extends ScriptDslContext {
 
-    private String language;
-    private List<String> lines = new ArrayList<>();
+    private final String language;
+    private final List<String> lines = new ArrayList<>();
 
-    InlineScriptDslContext(String language) {
+    InlineScriptDslContext(DslContext parentContext, String language) {
+        super(parentContext);
+
         this.language = language;
     }
 
@@ -42,6 +44,11 @@ class InlineScriptDslContext extends ScriptDslContext {
         } catch (Exception e) {
             throw new RuntimeException("Error running inline script, caused by " + e.getClass().getName() + ": " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    protected String[] getPermittedTokens() {
+        return new String[0];
     }
 
 }
