@@ -269,8 +269,10 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         if (!StringUtils.isNullOrEmpty(identifier)) {
                             if (modelItem instanceof Element) {
                                 registerIdentifier(identifier, (Element)modelItem);
+                                parserListener.onParsedModelElement(lineNumber, identifier, (Element)modelItem);
                             } else if (modelItem instanceof Relationship) {
                                 registerIdentifier(identifier, (Relationship)modelItem);
+                                parserListener.onParsedRelationShip(lineNumber, identifier, (Relationship)modelItem);
                             }
                         }
 
