@@ -155,6 +155,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
     void parse(List<String> lines, File dslFile) throws StructurizrDslParserException {
         int lineNumber = 1;
         for (String line : lines) {
+            parseLineAt(lineNumber, dslFile);
             boolean includeInDslSourceLines = true;
 
             if (line.startsWith(BOM)) {
@@ -919,4 +920,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         return clazz.isAssignableFrom(contextStack.peek().getClass());
     }
 
+    void parseLineAt(int lineNumber, File dslFile) {
+        // only to be interceptable
+    }
 }
