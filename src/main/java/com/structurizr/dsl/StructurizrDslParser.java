@@ -152,7 +152,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         parse(lines, new File("."));
     }
 
-    void parse(List<String> lines, File dslFile) throws StructurizrDslParserException {
+    public void parse(List<String> lines, File dslFile) throws StructurizrDslParserException {
         int lineNumber = 1;
         for (String line : lines) {
             parseLineAt(lineNumber, dslFile);
