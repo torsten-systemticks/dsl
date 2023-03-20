@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.29.1 (17th March 2023)
+
+- Upgrades structurizr/java to [v1.23.1](https://github.com/structurizr/java/releases/tag/v1.23.1).
+- Upgrades structurizr/import to [v1.4.1](https://github.com/structurizr/import/releases/tag/v1.4.1).
+
+## 1.29.0 (12th March 2023)
+
+- Adds support for nested groups.
+- Upgrades structurizr/java to [v1.23.0](https://github.com/structurizr/java/releases/tag/v1.23.0).
+
+## 1.28.3 (11th March 2023)
+
+- Upgrades structurizr/java to [v1.22.3](https://github.com/structurizr/java/releases/tag/v1.22.3).
+- Silently ignore `!plugin` and `!script` when running in restricted mode, to match how `!docs` and `!adrs` work.
+
 ## 1.28.0 (5th March 2023)
 
 - Upgrades structurizr/import to [v1.4.0](https://github.com/structurizr/import/releases/tag/v1.4.0).

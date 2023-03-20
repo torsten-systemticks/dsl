@@ -26,7 +26,7 @@ Please see the [DSL cookbook](cookbook) for a tutorial guide to the Structurizr 
 		- [!identifiers](#identifiers)
 		- [!impliedRelationships](#impliedRelationships)
         - [model](#model)
-            - [enterprise](#enterprise)
+            - [enterprise](#enterprise) (deprecated)
             - [group](#group)
             - [person](#person)
             - [softwareSystem](#softwareSystem)
@@ -78,7 +78,7 @@ Please see the [DSL cookbook](cookbook) for a tutorial guide to the Structurizr 
 
 In addition, workspaces are subject to the following rules:
 
-- Each view must have a unique "key" (this is generated for you if not specified; __warning: automatically generated view keys are not guaranteed to be stable over time, and you will likely lose manual layout information when using them__). 
+- Each view must have a unique "key" (this is generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose [manual layout information](https://structurizr.com/help/manual-layout) when using them in conjunction with Structurizr Lite/on-premises/cloud__). 
 - Software and people names must be unique.
 - Container names must be unique within the context of a software system.
 - Component names must be unique within the context of a container.
@@ -131,7 +131,7 @@ For example:
 workspace {
 
     model {
-        enterprise "${ORGANISATION_NAME} - ${GROUP_NAME}" {
+        group "${ORGANISATION_NAME} - ${GROUP_NAME}" {
             user = person "User"
         }
     }
@@ -452,7 +452,6 @@ model {
 
 Permitted children:
 
-- [enterprise](#enterprise)
 - [group](#group)
 - [person](#person)
 - [softwareSystem](#softwareSystem)
@@ -461,6 +460,8 @@ Permitted children:
 - [-> (relationship)](#relationship)
 
 ### enterprise
+
+__This concept has been deprecated - please use [group](#group) instead.__
 
 The `enterprise` keyword provides a way to define a named "enterprise" (e.g. an organisation) within the top-level model. Any people or software systems defined inside this block will be deemed to be "internal", while all others will be deemed to be "external". On System Landscape and System Context diagrams, an enterprise is represented as a dashed box. Only a single enterprise can be defined within a model.
 
@@ -480,7 +481,7 @@ Permitted children:
 ### group
 
 The `group` keyword provides a way to define a named grouping of elements, which will be rendered as a boundary around those elements.
-See [groups.dsl](../src/test/dsl/groups.dsl) for an example.
+Groups can be nested; see [DSL Cookbook - Groups](cookbook/groups) for more information.
 
 ```
 group <name> {
@@ -488,15 +489,15 @@ group <name> {
 }
 ```
 
-Groups can be defined as follows:
+Groups can only be used to group elements of the same type (i.e. the same level of abstraction), as follows:
 
-| Location | Permitted elements |
-| ------------- | ------------- |
-| Model | People and software systems |
-| Software System | Containers |
-| Container | Components |
+| Location        | Permitted elements          |
+|-----------------|-----------------------------|
+| Model           | People and software systems |
+| Software System | Containers                  |
+| Container       | Components                  |
 
-Groups cannot be nested.
+See [Structurizr - Help - Notation](https://structurizr.com/help/notation) for a description of which groups are shown for a given diagram type.
 
 ### person
 
@@ -976,7 +977,7 @@ systemLandscape [key] [description] {
 }
 ```
 
-A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose manual layout information when them__.
+A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose [manual layout information](https://structurizr.com/help/manual-layout) when using them in conjunction with Structurizr Lite/on-premises/cloud__.
 
 Permitted children:
 
@@ -999,7 +1000,7 @@ systemContext <software system identifier> [key] [description] {
 }
 ```
 
-A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose manual layout information when them__.
+A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose [manual layout information](https://structurizr.com/help/manual-layout) when using them in conjunction with Structurizr Lite/on-premises/cloud__.
 
 Permitted children:
 
@@ -1022,7 +1023,7 @@ container <software system identifier> [key] [description] {
 }
 ```
 
-A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose manual layout information when them__.
+A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose [manual layout information](https://structurizr.com/help/manual-layout) when using them in conjunction with Structurizr Lite/on-premises/cloud__.
 
 Permitted children:
 
@@ -1045,7 +1046,7 @@ component <container identifier> [key] [description] {
 }
 ```
 
-A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose manual layout information when them__.
+A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose [manual layout information](https://structurizr.com/help/manual-layout) when using them in conjunction with Structurizr Lite/on-premises/cloud__.
 
 Permitted children:
 
@@ -1099,7 +1100,7 @@ The first property defines the scope of the view, and therefore what can be adde
 - Software system scope: People, other software systems, and containers. 
 - Container scope: People, other software systems, other containers, and components. 
 
-A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose manual layout information when them__.
+A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose [manual layout information](https://structurizr.com/help/manual-layout) when using them in conjunction with Structurizr Lite/on-premises/cloud__.
 
 Unlike the other diagram types, Dynamic views are created by specifying the relationships that should be added to the view, within the `dynamic` block, as follows:
 
@@ -1135,7 +1136,7 @@ The first property defines the scope of the view, and the second property define
 - `*` scope: All deployment nodes, infrastructure nodes, and container instances within the deployment environment.
 - Software system scope: All deployment nodes and infrastructure nodes within the deployment environment. Container instances within the deployment environment that belong to the software system.
 
-A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose manual layout information when them__.
+A view key will be generated for you if not specified; __automatically generated view keys are not guaranteed to be stable over time, and you will likely lose [manual layout information](https://structurizr.com/help/manual-layout) when using them in conjunction with Structurizr Lite/on-premises/cloud__.
 
 Permitted children:
 
@@ -1423,7 +1424,6 @@ The `terminology` keyword allows you to override the terminology used when rende
 
 ```
 terminology {
-    enterprise <term>
     person <term>
     softwareSystem <term>
     container <term>
@@ -1464,7 +1464,7 @@ users {
 The `!docs` keyword can be used to attach Markdown/AsciiDoc documentation to the parent context (either the workspace, a software system, or a container).
 
 ```
-!docs <path> <fully qualified class name>
+!docs <path> [fully qualified class name]
 ```
 
 The path must be a relative path, located within the same directory as the parent file, or a subdirectory of it. For example:
@@ -1486,7 +1486,7 @@ The above behaviour can be customised by specifying the fully qualified class na
 The `!adrs` keyword can be used to attach Markdown/AsciiDoc ADRs to the parent context (either the workspace, a software system, or a container).
 
 ```
-!adrs <path> <fully qualified class name>
+!adrs <path> [fully qualified class name]
 ```
 
 The path must be a relative path, located within the same directory as the parent file, or a subdirectory of it. For example:
