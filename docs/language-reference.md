@@ -50,6 +50,7 @@ Please see the [DSL cookbook](cookbook) for a tutorial guide to the Structurizr 
             - [dynamic](#dynamic-view)
             - [deployment](#deployment-view)
             - [custom](#custom-view)
+            - [image](#image-view)
             - [styles](#styles)
                 - [element](#element-style)
                 - [relationship](#relationship-style)
@@ -631,7 +632,8 @@ The `deploymentGroup` keyword provides a way to define a named deployment group.
 deploymentGroup <name>
 ```
 
-When software system/container instances are added to a deployment environment, all of the relationships between these elements are automatically replicated between *all* instances. Deployment groups provide a way to restrict the scope in which relationships are replicated. See [deployment-groups.dsl](../src/test/dsl/deployment-groups.dsl) for an example.  
+When software system/container instances are added to a deployment environment, all of the relationships between these elements are automatically replicated between *all* instances. Deployment groups provide a way to restrict the scope in which relationships are replicated.
+See [DSL cookbook - Deployment groups](https://github.com/structurizr/dsl/tree/master/docs/cookbook/deployment-groups) for an example.  
 
 ### deploymentNode
 
@@ -949,6 +951,7 @@ The `views` block can contain the following:
 - [dynamic](#dynamic-view)
 - [deployment](#deployment-view)
 - [custom](#custom-view)
+- [image](#image-view)
 - [styles](#styles)
 - [theme](#theme)
 - [themes](#themes)
@@ -1151,7 +1154,7 @@ Permitted children:
 
 ### custom view
 
-The `custom` keyword is used to define a [custom view](https://structurizr.com/help/custom-diagrams) (this is only available on the Structurizr cloud service/on-premises installation).
+The `custom` keyword is used to define a [custom view](https://structurizr.com/help/custom-diagrams) (this is only available on the Structurizr cloud service/on-premises installation/Lite).
 
 ```
 custom [key] [title] [description] {
@@ -1166,6 +1169,55 @@ Permitted children:
 - [autoLayout](#autoLayout)
 - [default](#default)
 - [animation](#animation)
+- [title](#title)
+- [description](#description)
+- [properties](#properties)
+
+### image view
+
+The `image` keyword is used to define an [image view](https://structurizr.com/help/image-views) (this is only available on the Structurizr cloud service/on-premises installation/Lite).
+
+```
+image <*|element identifier> [key] {
+    ...
+}
+```
+
+Inside this block you can define the source of the image, using one of the following:
+
+- `plantuml <file|url>`
+- `mermaid <file|url>`
+- `kroki <format> <file|url>` (where `format` is the format identifier included in the URL path; e.g. `https://kroki.io/{format}/...`)
+- `image <file|url>`
+
+You will need to provide a PlantUML/Mermaid/Kroki URL, and optionally a format (`png` or `svg`),
+when using these services. These can be specified as view set properties:
+
+```
+views {
+    properties {
+        "plantuml.url" "http://localhost:7777"
+        "plantuml.format" "svg"
+        "mermaid.url" "http://localhost:8888"
+        "mermaid.format" "svg"
+        "kroki.url" "http://localhost:9999"
+        "kroki.format" "svg"
+    }
+    
+    ...
+}
+```
+
+The public PlantUML (`https://plantuml.com/plantuml`), Mermaid (`https://mermaid.ink`), and Kroki (`https://kroki.io`)
+URLs may work, but (1) please be aware that you are sending information to a third-party service and (2) these public services
+may not correctly set the CORS headers required for image views to work (see the notes at [Structurizr - Help - Image views](https://structurizr.com/help/image-views)).
+
+See [DSL cookbook - Image view](https://github.com/structurizr/dsl/tree/master/docs/cookbook/image-view) and
+the [image view tests](https://github.com/structurizr/dsl/tree/master/src/test/dsl/image-views) for some examples.
+
+Permitted children:
+
+- [default](#default)
 - [title](#title)
 - [description](#description)
 - [properties](#properties)
@@ -1473,13 +1525,13 @@ The path must be a relative path, located within the same directory as the paren
 !docs subdirectory
 ``` 
 
-By default, the [com.structurizr.documentation.importer.DefaultDocumentationImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/documentation/importer/DefaultDocumentationImporter.java) class will be used to import documentation as follows:
+By default, the [com.structurizr.importer.documentation.DefaultDocumentationImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/importer/documentation/DefaultDocumentationImporter.java) class will be used to import documentation as follows:
 
 - All Markdown and AsciiDoc files in the given directory will be imported, alphabetically according to the filename.
 - All images in the given directory (and sub-directories) are also imported into the workspace.
 - See [Structurizr - Documentation - Headings and sections](https://structurizr.com/help/documentation/headings) for details about how section headings and numbering are handled.
 
-The above behaviour can be customised by specifying the fully qualified class name of your own implementation of [DocumentationImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/documentation/importer/DocumentationImporter.java), which needs to be on the DSL classpath or installed as a JAR file in the `plugins` directory next to your DSL file.
+The above behaviour can be customised by specifying the fully qualified class name of your own implementation of [DocumentationImporter](https://github.com/structurizr/documentation/blob/main/src/main/java/com/structurizr/importer/documentation/DocumentationImporter.java), which needs to be on the DSL classpath or installed as a JAR file in the `plugins` directory next to your DSL file.
 
 ## Architecture decision records (ADRs)
 
