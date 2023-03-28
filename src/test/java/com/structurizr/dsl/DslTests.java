@@ -797,9 +797,9 @@ class DslTests extends AbstractTests {
     }
 
     @Test
-    void test_parallel() throws Exception {
+    void test_parallel1() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("src/test/dsl/parallel.dsl"));
+        parser.parse(new File("src/test/dsl/parallel1.dsl"));
 
         assertFalse(parser.getWorkspace().isEmpty());
         DynamicView view = parser.getWorkspace().getViews().getDynamicViews().iterator().next();
@@ -808,6 +808,21 @@ class DslTests extends AbstractTests {
         assertEquals("1", relationships.get(0).getOrder());
         assertEquals("2", relationships.get(1).getOrder());
         assertEquals("3", relationships.get(2).getOrder());
+        assertEquals("3", relationships.get(3).getOrder());
+    }
+
+    @Test
+    void test_parallel2() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/parallel2.dsl"));
+
+        assertFalse(parser.getWorkspace().isEmpty());
+        DynamicView view = parser.getWorkspace().getViews().getDynamicViews().iterator().next();
+        List<RelationshipView> relationships = new ArrayList<>(view.getRelationships());
+        assertEquals(4, relationships.size());
+        assertEquals("1", relationships.get(0).getOrder());
+        assertEquals("2", relationships.get(1).getOrder());
+        assertEquals("2", relationships.get(2).getOrder());
         assertEquals("3", relationships.get(3).getOrder());
     }
 
@@ -1171,6 +1186,26 @@ class DslTests extends AbstractTests {
         parser.parse(new File("src/test/dsl/deployment-environment-empty.dsl"));
 
         assertEquals(1, parser.getWorkspace().getModel().getDeploymentNodes().size());
+    }
+
+    @Test
+    void test_MultiLineSupport() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/multi-line.dsl"));
+
+        assertNotNull(parser.getWorkspace().getModel().getSoftwareSystemWithName("Software System"));
+    }
+
+    @Test
+    void test_MultiLineWithError() {
+        try {
+            StructurizrDslParser parser = new StructurizrDslParser();
+            parser.parse(new File("src/test/dsl/multi-line-with-error.dsl"));
+            fail();
+        } catch (StructurizrDslParserException e) {
+            // check that the error message includes the original line number
+            assertEquals("Unexpected tokens (expected: !docs, !adrs, group, container, description, tags, url, properties, perspectives, ->) at line 8: component \"Component\" // components not permitted inside software systems", e.getMessage());
+        }
     }
 
 }

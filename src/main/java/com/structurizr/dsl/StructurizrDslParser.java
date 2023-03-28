@@ -26,6 +26,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
     private static final Pattern COMMENT_PATTERN = Pattern.compile("^\\s*?(//|#).*$");
     private static final String MULTI_LINE_COMMENT_START_TOKEN = "/*";
     private static final String MULTI_LINE_COMMENT_END_TOKEN = "*/";
+    private static final String MULTI_LINE_SEPARATOR = "\\";
 
     private static final Pattern STRING_SUBSTITUTION_PATTERN = Pattern.compile("(\\$\\{[a-zA-Z0-9-_.]+?})");
 
@@ -152,11 +153,45 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         parse(lines, new File("."));
     }
 
-    public void parse(List<String> lines, File dslFile) throws StructurizrDslParserException {
+    private List<DslLine> preProcessLines(List<String> lines) {
+        List<DslLine> dslLines = new ArrayList<>();
+
         int lineNumber = 1;
+        StringBuilder buf = new StringBuilder();
+        boolean lineComplete = true;
+
         for (String line : lines) {
-            parseLineAt(lineNumber, dslFile);
+            if (line.endsWith(MULTI_LINE_SEPARATOR)) {
+                buf.append(line, 0, line.length()-1);
+                lineComplete = false;
+            } else {
+                if (lineComplete) {
+                    buf.append(line);
+                } else {
+                    buf.append(line.stripLeading());
+                    lineComplete = true;
+                }
+            }
+
+            if (lineComplete) {
+                dslLines.add(new DslLine(buf.toString(), lineNumber));
+                buf = new StringBuilder();
+            }
+
+            lineNumber++;
+        }
+
+        return dslLines;
+    }
+
+    public void parse(List<String> lines, File dslFile) throws StructurizrDslParserException {
+        List<DslLine> dslLines = preProcessLines(lines);
+
+        for (DslLine dslLine : dslLines) {
+            parseLineAt(dslLine.getLineNumber(), dslFile);
             boolean includeInDslSourceLines = true;
+
+            String line = dslLine.getSource();
 
             if (line.startsWith(BOM)) {
                 // this caters for files encoded as "UTF-8 with BOM"
@@ -682,6 +717,10 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                     } else if (inContext(DynamicViewDslContext.class)) {
                         new DynamicViewContentParser().parseRelationship(getContext(DynamicViewDslContext.class), tokens);
 
+                        if (inContext(DynamicViewParallelSequenceDslContext.class)) {
+                            getContext(DynamicViewParallelSequenceDslContext.class).hasRelationships(true);
+                        }
+
                     } else if (THEME_TOKEN.equalsIgnoreCase(firstToken) && (inContext(ViewsDslContext.class) || inContext(StylesDslContext.class))) {
                         new ThemeParser().parseTheme(getContext(), tokens);
 
@@ -828,13 +867,11 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                 if (includeInDslSourceLines) {
                     dslSourceLines.add(line);
                 }
-
-                lineNumber++;
             } catch (Exception e) {
                 if (e.getMessage() != null) {
-                    throw new StructurizrDslParserException(e.getMessage(), lineNumber, line);
+                    throw new StructurizrDslParserException(e.getMessage(), dslLine.getLineNumber(), line);
                 } else {
-                    throw new StructurizrDslParserException(e.getClass().getSimpleName(), lineNumber, line);
+                    throw new StructurizrDslParserException(e.getClass().getSimpleName(), dslLine.getLineNumber(), line);
                 }
             }
         }
