@@ -241,9 +241,19 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (INCLUDE_FILE_TOKEN.equalsIgnoreCase(firstToken)) {
                         if (!restricted || tokens.get(1).startsWith("https://")) {
+                            String leadingSpace = line.substring(0, line.indexOf(INCLUDE_FILE_TOKEN));
+
                             IncludedDslContext context = new IncludedDslContext(dslFile);
                             new IncludeParser().parse(context, tokens);
-                            parse(context.getLines(), context.getFile());
+                            for (IncludedFile includedFile : context.getFiles()) {
+                                List<String> paddedLines = new ArrayList<>();
+                                for (String unpaddedLine : includedFile.getLines()) {
+                                    paddedLines.add(leadingSpace + unpaddedLine);
+                                }
+
+                                parse(paddedLines, includedFile.getFile());
+                            }
+
                             includeInDslSourceLines = false;
                         }
 
@@ -368,6 +378,18 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         Container container = getContext(ContainerDslContext.class).getContainer();
                         group.setParent(container);
                         startContext(new ContainerDslContext(container, group));
+                        registerIdentifier(identifier, group);
+                    } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentEnvironmentDslContext.class)) {
+                        ElementGroup group = new GroupParser().parse(getContext(DeploymentEnvironmentDslContext.class), tokens.withoutContextStartToken());
+
+                        String environment = getContext(DeploymentEnvironmentDslContext.class).getEnvironment();
+                        startContext(new DeploymentEnvironmentDslContext(environment, group));
+                        registerIdentifier(identifier, group);
+                    } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentNodeDslContext.class)) {
+                        ElementGroup group = new GroupParser().parse(getContext(DeploymentNodeDslContext.class), tokens.withoutContextStartToken());
+
+                        DeploymentNode deploymentNode = getContext(DeploymentNodeDslContext.class).getDeploymentNode();
+                        startContext(new DeploymentNodeDslContext(deploymentNode, group));
                         registerIdentifier(identifier, group);
                     } else if (TAGS_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelItemDslContext.class) && !getContext(ModelItemDslContext.class).hasGroup()) {
                         new ModelItemParser().parseTags(getContext(ModelItemDslContext.class), tokens);
@@ -566,8 +588,16 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                         registerIdentifier(identifier, new DeploymentGroup(group));
 
-                    } else if (DEPLOYMENT_NODE_TOKEN.equalsIgnoreCase(firstToken) && (inContext(DeploymentEnvironmentDslContext.class) || inContext(DeploymentNodeDslContext.class))) {
-                        DeploymentNode deploymentNode = new DeploymentNodeParser().parse(getContext(), tokens.withoutContextStartToken());
+                    } else if (DEPLOYMENT_NODE_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentEnvironmentDslContext.class)) {
+                        DeploymentNode deploymentNode = new DeploymentNodeParser().parse(getContext(DeploymentEnvironmentDslContext.class), tokens.withoutContextStartToken());
+
+                        if (shouldStartContext(tokens)) {
+                            startContext(new DeploymentNodeDslContext(deploymentNode));
+                        }
+
+                        registerIdentifier(identifier, deploymentNode);
+                    } else if (DEPLOYMENT_NODE_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentNodeDslContext.class)) {
+                        DeploymentNode deploymentNode = new DeploymentNodeParser().parse(getContext(DeploymentNodeDslContext.class), tokens.withoutContextStartToken());
 
                         if (shouldStartContext(tokens)) {
                             startContext(new DeploymentNodeDslContext(deploymentNode));
