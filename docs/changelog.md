@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.32.0 (unreleased to Maven Central)
+
+- Fixes https://github.com/structurizr/dsl/issues/308 (Hidden (e.g. .DS_Store) file causes exception during !include <directory>).
+
+## 1.31.0 (25th July 2023)
+
+- Adds support for passing parameters to external scripts.
+- Updates dependencies.
+
+## 1.30.4 (17th July 2023)
+
+- Adds support for more easily including/excluding implied relationships in view definitions (https://github.com/structurizr/dsl/issues/303).
+
 ## 1.30.3 (4th July 2023)
 
 - Fixes https://github.com/structurizr/dsl/issues/289 (Cannot invoke "Object.equals(Object)" because "r" is null).

@@ -6,6 +6,7 @@ import com.structurizr.view.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -346,6 +347,11 @@ class DslTests extends AbstractTests {
 
     @Test
     void test_includeLocalDirectory() throws Exception {
+        File hiddenFile = new File("src/test/dsl/include/model/software-system/.DS_Store");
+        if (hiddenFile.exists()) {
+            hiddenFile.delete();
+        }
+
         StructurizrDslParser parser = new StructurizrDslParser();
         parser.parse(new File("src/test/dsl/include-directory.dsl"));
 
@@ -385,6 +391,18 @@ class DslTests extends AbstractTests {
                 "    }\n" +
                 "\n" +
                 "}\n", new String(Base64.getDecoder().decode(workspace.getProperties().get("structurizr.dsl"))));
+    }
+
+    @Test
+    void test_includeLocalDirectory_WhenThereAreHiddenFiles() throws Exception {
+        File hiddenFile = new File("src/test/dsl/include/model/software-system/.DS_Store");
+        if (hiddenFile.exists()) {
+            hiddenFile.delete();
+        }
+        Files.writeString(hiddenFile.toPath(), "hello world");
+
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/include-directory.dsl"));
     }
 
     @Test
@@ -519,12 +537,14 @@ class DslTests extends AbstractTests {
         StructurizrDslParser parser = new StructurizrDslParser();
         parser.setRestricted(true);
 
+        File dslFile = new File("src/test/dsl/extend/extend-workspace-from-json-file.dsl");
+
         try {
             // this will fail, because the model import will be ignored
-            parser.parse(new File("src/test/dsl/extend/extend-workspace-from-json-file.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Cannot import workspace from a file when running in restricted mode at line 1: workspace extends workspace.json {", e.getMessage());
+            assertEquals("Cannot import workspace from a file when running in restricted mode at line 1 of " + dslFile.getAbsolutePath() + ": workspace extends workspace.json {", e.getMessage());
         }
     }
 
@@ -627,12 +647,13 @@ class DslTests extends AbstractTests {
         StructurizrDslParser parser = new StructurizrDslParser();
         parser.setRestricted(true);
 
+        File dslFile = new File("src/test/dsl/extend/extend-workspace-from-dsl-file.dsl");
         try {
             // this will fail, because the model import will be ignored
-            parser.parse(new File("src/test/dsl/extend/extend-workspace-from-dsl-file.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Cannot import workspace from a file when running in restricted mode at line 1: workspace extends workspace.dsl {", e.getMessage());
+            assertEquals("Cannot import workspace from a file when running in restricted mode at line 1 of " + dslFile.getAbsolutePath() +": workspace extends workspace.dsl {", e.getMessage());
         }
     }
 
@@ -799,6 +820,14 @@ class DslTests extends AbstractTests {
     }
 
     @Test
+    void test_scriptWithParameters() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/script-external-with-parameters.dsl"));
+
+        assertNotNull(parser.getWorkspace().getModel().getPersonWithName("Groovy"));
+    }
+
+    @Test
     void test_inlineScript() throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
         parser.parse(new File("src/test/dsl/script-inline.dsl"));
@@ -861,79 +890,93 @@ class DslTests extends AbstractTests {
     }
 
     @Test
-    void test_unexpectedTokensBeforeWorkspace() throws Exception {
+    void test_unexpectedTokensBeforeWorkspace() {
+        File dslFile = new File("src/test/dsl/unexpected-tokens-before-workspace.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/unexpected-tokens-before-workspace.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Unexpected tokens (expected: workspace) at line 1: hello world", e.getMessage());
+            assertEquals("Unexpected tokens (expected: workspace) at line 1 of " + dslFile.getAbsolutePath() + ": hello world", e.getMessage());
         }
     }
 
     @Test
-    void test_unexpectedTokensAfterWorkspace() throws Exception {
+    void test_unexpectedTokensAfterWorkspace() {
+        File dslFile = new File("src/test/dsl/unexpected-tokens-after-workspace.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/unexpected-tokens-after-workspace.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Unexpected tokens at line 4: hello world", e.getMessage());
+            assertEquals("Unexpected tokens at line 4 of " + dslFile.getAbsolutePath() + ": hello world", e.getMessage());
         }
     }
 
     @Test
-    void test_unexpectedTokensInWorkspace() throws Exception {
+    void test_unexpectedTokensInWorkspace() {
+        File dslFile = new File("src/test/dsl/unexpected-tokens-in-workspace.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/unexpected-tokens-in-workspace.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Unexpected tokens (expected: name, description, properties, !docs, !adrs, !identifiers, !impliedRelationships, model, views, configuration) at line 3: softwareSystem \"Name\"", e.getMessage());
+            assertEquals("Unexpected tokens (expected: name, description, properties, !docs, !adrs, !identifiers, !impliedRelationships, model, views, configuration) at line 3 of " + dslFile.getAbsolutePath() + ": softwareSystem \"Name\"", e.getMessage());
         }
     }
 
     @Test
-    void test_urlNotPermittedInGroup() throws Exception {
+    void test_urlNotPermittedInGroup() {
+        File dslFile = new File("src/test/dsl/group-url.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/group-url.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Unexpected tokens (expected: !docs, !adrs, group, container, description, tags, url, properties, perspectives, ->) at line 6: url \"https://example.com\"", e.getMessage());
+            assertEquals("Unexpected tokens (expected: !docs, !adrs, group, container, description, tags, url, properties, perspectives, ->) at line 6 of " + dslFile.getAbsolutePath() + ": url \"https://example.com\"", e.getMessage());
         }
     }
 
     @Test
-    void test_multipleWorkspaceTokens_ThrowsAnException() throws Exception {
+    void test_multipleWorkspaceTokens_ThrowsAnException() {
+        File dslFile = new File("src/test/dsl/multiple-workspace-tokens.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/multiple-workspace-tokens.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Multiple workspaces are not permitted in a DSL definition at line 9: workspace {", e.getMessage());
+            assertEquals("Multiple workspaces are not permitted in a DSL definition at line 9 of " + dslFile.getAbsolutePath() + ": workspace {", e.getMessage());
         }
     }
 
     @Test
-    void test_multipleModelTokens_ThrowsAnException() throws Exception {
+    void test_multipleModelTokens_ThrowsAnException() {
+        File dslFile = new File("src/test/dsl/multiple-model-tokens.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/multiple-model-tokens.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Multiple models are not permitted in a DSL definition at line 7: model {", e.getMessage());
+            assertEquals("Multiple models are not permitted in a DSL definition at line 7 of " + dslFile.getAbsolutePath() + ": model {", e.getMessage());
         }
     }
 
     @Test
-    void test_multipleViewTokens_ThrowsAnException() throws Exception {
+    void test_multipleViewTokens_ThrowsAnException() {
+        File dslFile = new File("src/test/dsl/multiple-view-tokens.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/multiple-view-tokens.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("Multiple view sets are not permitted in a DSL definition at line 13: views {", e.getMessage());
+            assertEquals("Multiple view sets are not permitted in a DSL definition at line 13 of " + dslFile.getAbsolutePath() + ": views {", e.getMessage());
         }
     }
 
@@ -1075,25 +1118,47 @@ class DslTests extends AbstractTests {
 
     @Test
     void test_MultiLineWithError() {
+        File dslFile = new File("src/test/dsl/multi-line-with-error.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/multi-line-with-error.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
             // check that the error message includes the original line number
-            assertEquals("Unexpected tokens (expected: !docs, !adrs, group, container, description, tags, url, properties, perspectives, ->) at line 8: component \"Component\" // components not permitted inside software systems", e.getMessage());
+            assertEquals("Unexpected tokens (expected: !docs, !adrs, group, container, description, tags, url, properties, perspectives, ->) at line 8 of " + dslFile.getAbsolutePath() + ": component \"Component\" // components not permitted inside software systems", e.getMessage());
         }
     }
 
     @Test
-    void test_RelationshipAlreadyExists() throws Exception {
+    void test_RelationshipAlreadyExists() {
+        File dslFile = new File("src/test/dsl/relationship-already-exists.dsl");
+
         try {
             StructurizrDslParser parser = new StructurizrDslParser();
-            parser.parse(new File("src/test/dsl/relationship-already-exists.dsl"));
+            parser.parse(dslFile);
             fail();
         } catch (StructurizrDslParserException e) {
-            assertEquals("A relationship between \"SoftwareSystem://B\" and \"SoftwareSystem://A\" already exists at line 10: b -> a", e.getMessage());
+            assertEquals("A relationship between \"SoftwareSystem://B\" and \"SoftwareSystem://A\" already exists at line 10 of " + dslFile.getAbsolutePath() + ": b -> a", e.getMessage());
         }
+    }
+
+    @Test
+    void test_ExcludeImpliedRelationship() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/exclude-implied-relationship.dsl"));
+
+        // check the system landscape view doesn't include any relationships
+        assertEquals(0, parser.getWorkspace().getViews().getSystemLandscapeViews().iterator().next().getRelationships().size());
+    }
+
+    @Test
+    void test_IncludeImpliedRelationship() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(new File("src/test/dsl/include-implied-relationship.dsl"));
+
+        // check the system landscape view includes a relationship
+        assertEquals(1, parser.getWorkspace().getViews().getSystemLandscapeViews().iterator().next().getRelationships().size());
     }
 
 }

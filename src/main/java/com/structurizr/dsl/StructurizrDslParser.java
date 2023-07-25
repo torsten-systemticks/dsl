@@ -855,16 +855,24 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (SCRIPT_TOKEN.equalsIgnoreCase(firstToken)) {
                         if (!restricted) {
-                            if (shouldStartContext(tokens)) {
-                                // assume this is an inline script
-                                String language = new ScriptParser().parseInline(tokens.withoutContextStartToken());
+                            ScriptParser scriptParser = new ScriptParser();
+                            if (scriptParser.isInlineScript(tokens)) {
+                                String language = scriptParser.parseInline(tokens.withoutContextStartToken());
                                 startContext(new InlineScriptDslContext(getContext(), language));
                             } else {
-                                String filename = new ScriptParser().parseExternal(tokens);
+                                String filename = scriptParser.parseExternal(tokens.withoutContextStartToken());
                                 startContext(new ExternalScriptDslContext(getContext(), dslFile, filename));
-                                endContext();
+
+                                if (shouldStartContext(tokens)) {
+                                    // we'll wait for parameters before executing the script
+                                } else {
+                                    endContext();
+                                }
                             }
                         }
+
+                    } else if (inContext(ExternalScriptDslContext.class)) {
+                        new ScriptParser().parseParameter(getContext(ExternalScriptDslContext.class), tokens);
 
                     } else {
                         String[] expectedTokens;
@@ -899,9 +907,9 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                 }
             } catch (Exception e) {
                 if (e.getMessage() != null) {
-                    throw new StructurizrDslParserException(e.getMessage(), dslLine.getLineNumber(), line);
+                    throw new StructurizrDslParserException(e.getMessage(), dslFile, dslLine.getLineNumber(), line);
                 } else {
-                    throw new StructurizrDslParserException(e.getClass().getSimpleName(), dslLine.getLineNumber(), line);
+                    throw new StructurizrDslParserException(e.getClass().getSimpleName(), dslFile, dslLine.getLineNumber(), line);
                 }
             }
         }
