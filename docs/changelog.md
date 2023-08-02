@@ -1,13 +1,20 @@
 # Changelog
 
-## 1.32.0 (unreleased to Maven Central)
+## 1.32.0 (28th July 2023)
+
+- Adds the ability to specify the workspace `visibility` (private/public) via the workspace configuration.
+- Updates structurizr/java to [v1.26.1](https://github.com/structurizr/java/releases/tag/v1.26.1).
+
+## 1.31.1 (26th July 2023)
 
 - Fixes https://github.com/structurizr/dsl/issues/308 (Hidden (e.g. .DS_Store) file causes exception during !include <directory>).
+- Updates structurizr/java to [v1.25.1](https://github.com/structurizr/java/releases/tag/v1.25.1).
 
-## 1.31.0 (25th July 2023)
+## 1.31.0 (22nd July 2023)
 
 - Adds support for passing parameters to external scripts.
-- Updates dependencies.
+- Updates structurizr/java to [v1.25.0](https://github.com/structurizr/java/releases/tag/v1.25.0).
+- Updates structurizr/import to [v1.5.0](https://github.com/structurizr/import/releases/tag/v1.5.0).
 
 ## 1.30.4 (17th July 2023)
 
