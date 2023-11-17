@@ -4,8 +4,11 @@ import com.structurizr.Workspace;
 import com.structurizr.model.*;
 import com.structurizr.view.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -438,98 +441,25 @@ class DslTests extends AbstractTests {
         assertEquals(0, model.getSoftwareSystems().size());
     }
 
-    @Test
-    void test_extendWorkspaceFromJsonFile() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = { "src/test/dsl/extend/extend-workspace-from-json-file.dsl", "src/test/dsl/extend/extend-workspace-from-json-url.dsl" })
+    void test_extendWorkspaceFromJson(String dslFile) throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("src/test/dsl/extend/extend-workspace-from-json-file.dsl"));
+        parser.parse(new File(dslFile));
 
         Workspace workspace = parser.getWorkspace();
         Model model = workspace.getModel();
-        ViewSet views = workspace.getViews();
-
-        assertEquals("A new name", workspace.getName());
-        assertEquals("A new description", workspace.getDescription());
 
         assertEquals(1, model.getPeople().size());
         Person user = model.getPersonWithName("User");
-        assertEquals("A user of my software system.", user.getDescription());
 
-        assertEquals(1, workspace.getModel().getSoftwareSystems().size());
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName("Software System");
-        assertEquals("My software system.", softwareSystem.getDescription());
+        assertEquals(3, workspace.getModel().getSoftwareSystems().size());
+        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName("Software System 1");
+        assertTrue(user.hasEfferentRelationshipWith(softwareSystem, "Uses"));
 
-        assertEquals(1, softwareSystem.getContainers().size());
-        assertEquals("Web Application", softwareSystem.getContainers().iterator().next().getName());
-
-        assertEquals(1, workspace.getModel().getRelationships().size());
-        Relationship relationship = user.getRelationships().iterator().next();
-        assertEquals("Uses", relationship.getDescription());
-        assertSame(softwareSystem, relationship.getDestination());
-
-        assertEquals(1, views.getViews().size());
-        assertEquals(1, views.getSystemContextViews().size());
-        SystemContextView view = views.getSystemContextViews().iterator().next();
-        assertEquals("SystemContext", view.getKey());
-        assertEquals("An example of a System Context diagram.", view.getDescription());
-        assertEquals(2, view.getElements().size());
-        assertEquals(1, view.getRelationships().size());
-
-        assertEquals(2, views.getConfiguration().getStyles().getElements().size());
-        ElementStyle personStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Person")).findFirst().get();
-        assertEquals(Shape.Person, personStyle.getShape());
-        assertEquals("#08427b", personStyle.getBackground());
-        assertEquals("#ffffff", personStyle.getColor());
-
-        ElementStyle softwareSystemStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Software System")).findFirst().get();
-        assertEquals("#1168bd", softwareSystemStyle.getBackground());
-        assertEquals("#ffffff", softwareSystemStyle.getColor());
-    }
-
-    @Test
-    void test_extendWorkspaceFromJsonUrl() throws Exception {
-        StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("src/test/dsl/extend/extend-workspace-from-json-url.dsl"));
-
-        Workspace workspace = parser.getWorkspace();
-        Model model = workspace.getModel();
-        ViewSet views = workspace.getViews();
-
-        assertEquals("A new name", workspace.getName());
-        assertEquals("A new description", workspace.getDescription());
-
-        assertEquals(1, model.getPeople().size());
-        Person user = model.getPersonWithName("User");
-        assertEquals("A user of my software system.", user.getDescription());
-
-        assertEquals(1, workspace.getModel().getSoftwareSystems().size());
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName("Software System");
-        assertEquals("My software system.", softwareSystem.getDescription());
-
-        assertEquals(1, softwareSystem.getContainers().size());
-        assertEquals("Web Application", softwareSystem.getContainers().iterator().next().getName());
-
-        assertEquals(1, workspace.getModel().getRelationships().size());
-        Relationship relationship = user.getRelationships().iterator().next();
-        assertEquals("Uses", relationship.getDescription());
-        assertSame(softwareSystem, relationship.getDestination());
-
-        assertEquals(1, views.getViews().size());
-        assertEquals(1, views.getSystemContextViews().size());
-        SystemContextView view = views.getSystemContextViews().iterator().next();
-        assertEquals("SystemContext", view.getKey());
-        assertEquals("An example of a System Context diagram.", view.getDescription());
-        assertEquals(2, view.getElements().size());
-        assertEquals(1, view.getRelationships().size());
-
-        assertEquals(2, views.getConfiguration().getStyles().getElements().size());
-        ElementStyle personStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Person")).findFirst().get();
-        assertEquals(Shape.Person, personStyle.getShape());
-        assertEquals("#08427b", personStyle.getBackground());
-        assertEquals("#ffffff", personStyle.getColor());
-
-        ElementStyle softwareSystemStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Software System")).findFirst().get();
-        assertEquals("#1168bd", softwareSystemStyle.getBackground());
-        assertEquals("#ffffff", softwareSystemStyle.getColor());
+        assertEquals(2, softwareSystem.getContainers().size());
+        assertNotNull(softwareSystem.getContainers().stream().filter(c -> c.getName().equals("Web Application 1")).findFirst());
+        assertNotNull(softwareSystem.getContainers().stream().filter(c -> c.getName().equals("Web Application 2")).findFirst());
     }
 
     @Test
@@ -548,98 +478,24 @@ class DslTests extends AbstractTests {
         }
     }
 
-    @Test
-    void test_extendWorkspaceFromDslFile() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = { "src/test/dsl/extend/extend-workspace-from-dsl-file.dsl", "src/test/dsl/extend/extend-workspace-from-dsl-url.dsl" })
+    void test_extendWorkspaceFromDsl(String dslFile) throws Exception {
         StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("src/test/dsl/extend/extend-workspace-from-dsl-file.dsl"));
+        parser.parse(new File(dslFile));
 
         Workspace workspace = parser.getWorkspace();
         Model model = workspace.getModel();
-        ViewSet views = workspace.getViews();
-
-        assertEquals("A new name", workspace.getName());
-        assertEquals("A new description", workspace.getDescription());
 
         assertEquals(1, model.getPeople().size());
         Person user = model.getPersonWithName("User");
-        assertEquals("A user of my software system.", user.getDescription());
 
-        assertEquals(1, workspace.getModel().getSoftwareSystems().size());
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName("Software System");
-        assertEquals("My software system.", softwareSystem.getDescription());
-
-        assertEquals(1, softwareSystem.getContainers().size());
-        assertEquals("Web Application", softwareSystem.getContainers().iterator().next().getName());
-
-        assertEquals(1, workspace.getModel().getRelationships().size());
-        Relationship relationship = user.getRelationships().iterator().next();
-        assertEquals("Uses", relationship.getDescription());
-        assertSame(softwareSystem, relationship.getDestination());
-
-        assertEquals(1, views.getViews().size());
-        assertEquals(1, views.getSystemContextViews().size());
-        SystemContextView view = views.getSystemContextViews().iterator().next();
-        assertEquals("SystemContext", view.getKey());
-        assertEquals("An example of a System Context diagram.", view.getDescription());
-        assertEquals(2, view.getElements().size());
-        assertEquals(1, view.getRelationships().size());
-
-        assertEquals(2, views.getConfiguration().getStyles().getElements().size());
-        ElementStyle personStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Person")).findFirst().get();
-        assertEquals(Shape.Person, personStyle.getShape());
-        assertEquals("#08427b", personStyle.getBackground());
-        assertEquals("#ffffff", personStyle.getColor());
-
-        ElementStyle softwareSystemStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Software System")).findFirst().get();
-        assertEquals("#1168bd", softwareSystemStyle.getBackground());
-        assertEquals("#ffffff", softwareSystemStyle.getColor());
-    }
-
-    @Test
-    void test_extendWorkspaceFromDslUrl() throws Exception {
-        StructurizrDslParser parser = new StructurizrDslParser();
-        parser.parse(new File("src/test/dsl/extend/extend-workspace-from-dsl-url.dsl"));
-
-        Workspace workspace = parser.getWorkspace();
-        Model model = workspace.getModel();
-        ViewSet views = workspace.getViews();
-
-        assertEquals("A new name", workspace.getName());
-        assertEquals("A new description", workspace.getDescription());
-
-        assertEquals(1, model.getPeople().size());
-        Person user = model.getPersonWithName("User");
-        assertEquals("A user of my software system.", user.getDescription());
-
-        assertEquals(1, workspace.getModel().getSoftwareSystems().size());
-        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName("Software System");
-        assertEquals("My software system.", softwareSystem.getDescription());
+        assertEquals(3, workspace.getModel().getSoftwareSystems().size());
+        SoftwareSystem softwareSystem = model.getSoftwareSystemWithName("Software System 1");
+        assertTrue(user.hasEfferentRelationshipWith(softwareSystem, "Uses"));
 
         assertEquals(1, softwareSystem.getContainers().size());
         assertEquals("Web Application", softwareSystem.getContainers().iterator().next().getName());
-
-        assertEquals(1, workspace.getModel().getRelationships().size());
-        Relationship relationship = user.getRelationships().iterator().next();
-        assertEquals("Uses", relationship.getDescription());
-        assertSame(softwareSystem, relationship.getDestination());
-
-        assertEquals(1, views.getViews().size());
-        assertEquals(1, views.getSystemContextViews().size());
-        SystemContextView view = views.getSystemContextViews().iterator().next();
-        assertEquals("SystemContext", view.getKey());
-        assertEquals("An example of a System Context diagram.", view.getDescription());
-        assertEquals(2, view.getElements().size());
-        assertEquals(1, view.getRelationships().size());
-
-        assertEquals(2, views.getConfiguration().getStyles().getElements().size());
-        ElementStyle personStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Person")).findFirst().get();
-        assertEquals(Shape.Person, personStyle.getShape());
-        assertEquals("#08427b", personStyle.getBackground());
-        assertEquals("#ffffff", personStyle.getColor());
-
-        ElementStyle softwareSystemStyle = views.getConfiguration().getStyles().getElements().stream().filter(es -> es.getTag().equals("Software System")).findFirst().get();
-        assertEquals("#1168bd", softwareSystemStyle.getBackground());
-        assertEquals("#ffffff", softwareSystemStyle.getColor());
     }
 
     @Test
@@ -1057,7 +913,7 @@ class DslTests extends AbstractTests {
 
         ImageView mermaidView = (ImageView)workspace.getViews().getViewWithKey("mermaid");
         assertEquals("diagram.mmd", mermaidView.getTitle());
-        assertEquals("http://localhost:8888/img/eyAiY29kZSI6ImZsb3djaGFydCBURFxuICAgIFN0YXJ0IC0tPiBTdG9wIiwgIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In19?type=png", mermaidView.getContent());
+        assertEquals("http://localhost:8888/img/Zmxvd2NoYXJ0IFRECiAgICBTdGFydCAtLT4gU3RvcA==?type=png", mermaidView.getContent());
         assertEquals("image/png", mermaidView.getContentType());
 
         ImageView krokiView = (ImageView)workspace.getViews().getViewWithKey("kroki");
@@ -1086,7 +942,7 @@ class DslTests extends AbstractTests {
 
         ImageView mermaidView = (ImageView)workspace.getViews().getViewWithKey("mermaid");
         assertEquals("diagram.mmd", mermaidView.getTitle());
-        assertEquals("http://localhost:8888/svg/eyAiY29kZSI6ImZsb3djaGFydCBURFxuICAgIFN0YXJ0IC0tPiBTdG9wIiwgIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In19", mermaidView.getContent());
+        assertEquals("http://localhost:8888/svg/Zmxvd2NoYXJ0IFRECiAgICBTdGFydCAtLT4gU3RvcA==", mermaidView.getContent());
         assertEquals("image/svg+xml", mermaidView.getContentType());
 
         ImageView krokiView = (ImageView)workspace.getViews().getViewWithKey("kroki");
@@ -1159,6 +1015,35 @@ class DslTests extends AbstractTests {
 
         // check the system landscape view includes a relationship
         assertEquals(1, parser.getWorkspace().getViews().getSystemLandscapeViews().iterator().next().getRelationships().size());
+    }
+
+    @Test
+    void test_GroupWithoutBrace() throws Exception {
+        File dslFile = new File("src/test/dsl/group-without-brace.dsl");
+
+        try {
+            StructurizrDslParser parser = new StructurizrDslParser();
+            parser.parse(dslFile);
+            fail();
+        } catch (StructurizrDslParserException e) {
+            assertEquals("Expected: group <name> { at line 4 of " + dslFile.getAbsolutePath() + ": group \"Name\"", e.getMessage());
+        }
+    }
+
+    @Test
+    void test_ISO8859Encoding() throws Exception {
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.setCharacterEncoding(StandardCharsets.ISO_8859_1);
+        parser.parse(new File("src/test/dsl/iso-8859.dsl"));
+        assertNotNull(parser.getWorkspace().getModel().getSoftwareSystemWithName("Namé"));
+    }
+
+    @Test
+    void test_ScriptInDynamicView() throws Exception {
+        File dslFile = new File("src/test/dsl/script-in-dynamic-view.dsl");
+
+        StructurizrDslParser parser = new StructurizrDslParser();
+        parser.parse(dslFile);
     }
 
 }

@@ -7,6 +7,7 @@ import com.structurizr.view.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
@@ -32,6 +33,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
     private static final String STRUCTURIZR_DSL_IDENTIFIER_PROPERTY_NAME = "structurizr.dsl.identifier";
 
+    private Charset characterEncoding = StandardCharsets.UTF_8;
     private IdentifierScope identifierScope = IdentifierScope.Flat;
     private Stack<DslContext> contextStack;
     private Set<String> parsedTokens = new HashSet<>();
@@ -51,6 +53,19 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         contextStack = new Stack<>();
         identifiersRegister = new IdentifiersRegister();
         constants = new HashMap<>();
+    }
+
+    /**
+     * Provides a way to change the character encoding used by the DSL parser.
+     *
+     * @param characterEncoding     a Charset instance
+     */
+    public void setCharacterEncoding(Charset characterEncoding) {
+        if (characterEncoding == null) {
+            throw new IllegalArgumentException("A character encoding must be specified");
+        }
+
+        this.characterEncoding = characterEncoding;
     }
 
     IdentifierScope getIdentifierScope() {
@@ -125,7 +140,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
         List<File> files = FileUtils.findFiles(path);
         try {
             for (File file : files) {
-                parse(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8), file);
+                parse(Files.readAllLines(file.toPath(), characterEncoding), file);
             }
         } catch (IOException e) {
             throw new StructurizrDslParserException(e.getMessage());
@@ -257,6 +272,40 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                             includeInDslSourceLines = false;
                         }
 
+                    } else if (PLUGIN_TOKEN.equalsIgnoreCase(firstToken)) {
+                        if (!restricted) {
+                            String fullyQualifiedClassName = new PluginParser().parse(getContext(), tokens.withoutContextStartToken());
+                            startContext(new PluginDslContext(fullyQualifiedClassName, dslFile, this));
+                            if (!shouldStartContext(tokens)) {
+                                // run the plugin immediately, without looking for parameters
+                                endContext();
+                            }
+                        }
+
+                    } else if (inContext(PluginDslContext.class)) {
+                        new PluginParser().parseParameter(getContext(PluginDslContext.class), tokens);
+
+                    } else if (SCRIPT_TOKEN.equalsIgnoreCase(firstToken)) {
+                        if (!restricted) {
+                            ScriptParser scriptParser = new ScriptParser();
+                            if (scriptParser.isInlineScript(tokens)) {
+                                String language = scriptParser.parseInline(tokens.withoutContextStartToken());
+                                startContext(new InlineScriptDslContext(getContext(), dslFile, language));
+                            } else {
+                                String filename = scriptParser.parseExternal(tokens.withoutContextStartToken());
+                                startContext(new ExternalScriptDslContext(getContext(), dslFile, filename));
+
+                                if (shouldStartContext(tokens)) {
+                                    // we'll wait for parameters before executing the script
+                                } else {
+                                    endContext();
+                                }
+                            }
+                        }
+
+                    } else if (inContext(ExternalScriptDslContext.class)) {
+                        new ScriptParser().parseParameter(getContext(ExternalScriptDslContext.class), tokens);
+
                     } else if (tokens.size() > 2 && RELATIONSHIP_TOKEN.equals(tokens.get(1)) && (inContext(ModelDslContext.class) || inContext(EnterpriseDslContext.class) || inContext(CustomElementDslContext.class) || inContext(PersonDslContext.class) || inContext(SoftwareSystemDslContext.class) || inContext(ContainerDslContext.class) || inContext(ComponentDslContext.class) || inContext(DeploymentEnvironmentDslContext.class) || inContext(DeploymentNodeDslContext.class) || inContext(InfrastructureNodeDslContext.class) || inContext(SoftwareSystemInstanceDslContext.class) || inContext(ContainerInstanceDslContext.class))) {
                         Relationship relationship = new ExplicitRelationshipParser().parse(getContext(), tokens.withoutContextStartToken());
 
@@ -275,7 +324,7 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                         registerIdentifier(identifier, relationship);
 
-                    } else if (REF_TOKEN.equalsIgnoreCase(firstToken) && (inContext(ModelDslContext.class))) {
+                    } else if ((REF_TOKEN.equalsIgnoreCase(firstToken) || EXTEND_TOKEN.equalsIgnoreCase(firstToken)) && (inContext(ModelDslContext.class))) {
                         ModelItem modelItem = new RefParser().parse(getContext(), tokens.withoutContextStartToken());
 
                         if (shouldStartContext(tokens)) {
@@ -356,37 +405,37 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
                         registerIdentifier(identifier, component);
 
                     } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(ModelDslContext.class)) {
-                        ElementGroup group = new GroupParser().parse(getContext(ModelDslContext.class), tokens.withoutContextStartToken());
+                        ElementGroup group = new GroupParser().parse(getContext(ModelDslContext.class), tokens);
 
                         startContext(new ModelDslContext(group));
                         registerIdentifier(identifier, group);
                     } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(EnterpriseDslContext.class)) {
-                        ElementGroup group = new GroupParser().parse(getContext(EnterpriseDslContext.class), tokens.withoutContextStartToken());
+                        ElementGroup group = new GroupParser().parse(getContext(EnterpriseDslContext.class), tokens);
 
                         startContext(new EnterpriseDslContext(group));
                         registerIdentifier(identifier, group);
                     } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(SoftwareSystemDslContext.class)) {
-                        ElementGroup group = new GroupParser().parse(getContext(SoftwareSystemDslContext.class), tokens.withoutContextStartToken());
+                        ElementGroup group = new GroupParser().parse(getContext(SoftwareSystemDslContext.class), tokens);
 
                         SoftwareSystem softwareSystem = getContext(SoftwareSystemDslContext.class).getSoftwareSystem();
                         group.setParent(softwareSystem);
                         startContext(new SoftwareSystemDslContext(softwareSystem, group));
                         registerIdentifier(identifier, group);
                     } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(ContainerDslContext.class)) {
-                        ElementGroup group = new GroupParser().parse(getContext(ContainerDslContext.class), tokens.withoutContextStartToken());
+                        ElementGroup group = new GroupParser().parse(getContext(ContainerDslContext.class), tokens);
 
                         Container container = getContext(ContainerDslContext.class).getContainer();
                         group.setParent(container);
                         startContext(new ContainerDslContext(container, group));
                         registerIdentifier(identifier, group);
                     } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentEnvironmentDslContext.class)) {
-                        ElementGroup group = new GroupParser().parse(getContext(DeploymentEnvironmentDslContext.class), tokens.withoutContextStartToken());
+                        ElementGroup group = new GroupParser().parse(getContext(DeploymentEnvironmentDslContext.class), tokens);
 
                         String environment = getContext(DeploymentEnvironmentDslContext.class).getEnvironment();
                         startContext(new DeploymentEnvironmentDslContext(environment, group));
                         registerIdentifier(identifier, group);
                     } else if (GROUP_TOKEN.equalsIgnoreCase(firstToken) && inContext(DeploymentNodeDslContext.class)) {
-                        ElementGroup group = new GroupParser().parse(getContext(DeploymentNodeDslContext.class), tokens.withoutContextStartToken());
+                        ElementGroup group = new GroupParser().parse(getContext(DeploymentNodeDslContext.class), tokens);
 
                         DeploymentNode deploymentNode = getContext(DeploymentNodeDslContext.class).getDeploymentNode();
                         startContext(new DeploymentNodeDslContext(deploymentNode, group));
@@ -842,40 +891,6 @@ public final class StructurizrDslParser extends StructurizrDslTokens {
 
                     } else if (IDENTIFIERS_TOKEN.equalsIgnoreCase(firstToken) && inContext(WorkspaceDslContext.class)) {
                         setIdentifierScope(new IdentifierScopeParser().parse(getContext(), tokens));
-
-                    } else if (PLUGIN_TOKEN.equalsIgnoreCase(firstToken)) {
-                        if (!restricted) {
-                            String fullyQualifiedClassName = new PluginParser().parse(getContext(), tokens.withoutContextStartToken());
-                            startContext(new PluginDslContext(fullyQualifiedClassName, dslFile));
-                            if (!shouldStartContext(tokens)) {
-                                // run the plugin immediately, without looking for parameters
-                                endContext();
-                            }
-                        }
-
-                    } else if (inContext(PluginDslContext.class)) {
-                        new PluginParser().parseParameter(getContext(PluginDslContext.class), tokens);
-
-                    } else if (SCRIPT_TOKEN.equalsIgnoreCase(firstToken)) {
-                        if (!restricted) {
-                            ScriptParser scriptParser = new ScriptParser();
-                            if (scriptParser.isInlineScript(tokens)) {
-                                String language = scriptParser.parseInline(tokens.withoutContextStartToken());
-                                startContext(new InlineScriptDslContext(getContext(), language));
-                            } else {
-                                String filename = scriptParser.parseExternal(tokens.withoutContextStartToken());
-                                startContext(new ExternalScriptDslContext(getContext(), dslFile, filename));
-
-                                if (shouldStartContext(tokens)) {
-                                    // we'll wait for parameters before executing the script
-                                } else {
-                                    endContext();
-                                }
-                            }
-                        }
-
-                    } else if (inContext(ExternalScriptDslContext.class)) {
-                        new ScriptParser().parseParameter(getContext(ExternalScriptDslContext.class), tokens);
 
                     } else {
                         String[] expectedTokens;

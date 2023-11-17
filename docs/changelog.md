@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.34.0 (unreleased)
+
+- Fixes https://github.com/structurizr/dsl/issues/364 (.DS_Store file causes exception during !include <directory> on Windows).
+- Adds a `getDslParser()` method to the `StructurizrDslPluginContext` class (https://github.com/structurizr/dsl/issues/361).
+
+## 1.33.0 (27th October 2023)
+
+- DSL identifiers (if present) will now be loaded when extending a JSON workspace (see https://github.com/structurizr/dsl/discussions/328).
+- Adds a `context` variable to inline/external scripts (see https://github.com/structurizr/dsl/issues/332).
+- Fixes https://github.com/structurizr/dsl/issues/324 (Groups with no curly braces breaks diagrams).
+- Adds a way to set the character encoding used by the DSL parser (see https://github.com/structurizr/dsl/issues/338).
+- Fixes https://github.com/structurizr/dsl/issues/336 (Dynamic View does not allow !script tag).
+- `!extend` can now be used instead of `!ref`.
+
 ## 1.32.0 (28th July 2023)
 
 - Adds the ability to specify the workspace `visibility` (private/public) via the workspace configuration.

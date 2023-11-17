@@ -1,30 +1,18 @@
 workspace extends https://raw.githubusercontent.com/structurizr/dsl/master/src/test/dsl/extend/workspace.json {
-    name "A new name"
-    description "A new description"
 
     model {
-        softwareSystem = softwareSystem "Software System" {
-            webapp = container "Web Application"
-        }
-    }
-
-    views {
-        systemContext softwareSystem "SystemContext" "An example of a System Context diagram." {
-            include *
-            autoLayout
+        // !extend with DSL identifier
+        !extend softwareSystem1 {
+            webapp1 = container "Web Application 1"
         }
 
-        styles {
-            element "Software System" {
-                background #1168bd
-                color #ffffff
-            }
-            element "Person" {
-                shape person
-                background #08427b
-                color #ffffff
-            }
+        // !extend with canonical name
+        !extend "SoftwareSystem://Software System 1" {
+            webapp2 = container "Web Application 2"
         }
+
+        user -> softwareSystem1 "Uses"
+        softwareSystem3.webapp -> softwareSystem3.db
     }
-    
+
 }

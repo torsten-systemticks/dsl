@@ -7,11 +7,10 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * Used to pass contextual information to DSL plugins when they are executed.
+ * Used to pass contextual information to DSL scripts when they are executed.
  */
-public class StructurizrDslPluginContext {
+public class StructurizrDslScriptContext {
 
-    private final StructurizrDslParser dslParser;
     private final File dslFile;
     private final Workspace workspace;
     private final Map<String,String> parameters;
@@ -19,29 +18,18 @@ public class StructurizrDslPluginContext {
     /**
      * Creates a new instance.
      *
-     * @param dslParser     a reference to the DSL parser that loaded the plugin
-     * @param dslFile       a reference to the DSL file that loaded the plugin
+     * @param dslFile       a reference to the DSL file that loaded the script
      * @param workspace     the workspace
      * @param parameters    a map of name/value pairs representing parameters
      */
-    public StructurizrDslPluginContext(StructurizrDslParser dslParser, File dslFile, Workspace workspace, Map<String,String> parameters) {
-        this.dslParser = dslParser;
+    public StructurizrDslScriptContext(File dslFile, Workspace workspace, Map<String,String> parameters) {
         this.dslFile = dslFile;
         this.workspace = workspace;
         this.parameters = parameters;
     }
 
     /**
-     * Gets a reference to the DSL parser that initiated this plugin context.
-     *
-     * @return  a StructurizrDslParser instance
-     */
-    public StructurizrDslParser getDslParser() {
-        return dslParser;
-    }
-
-    /**
-     * Gets a reference to the DSL file that initiated this plugin context.
+     * Gets a reference to the DSL file that initiated this script context.
      *
      * @return  a File instance
      */

@@ -1,10 +1,18 @@
-workspace "Getting Started" "This is a model of my software system." {
+workspace {
+
+    !identifiers hierarchical
 
     model {
-        user = person "User" "A user of my software system."
-        softwareSystem = softwareSystem "Software System" "My software system."
+        user = person "User"
 
-        user -> softwareSystem "Uses"
+        softwareSystem1 = softwareSystem "Software System 1"
+
+        softwareSystem "Software System 2"
+
+        softwareSystem3 = softwareSystem "Software System 3" {
+            webapp = container "Web Application"
+            db = container "Database"
+        }
     }
 
 }
