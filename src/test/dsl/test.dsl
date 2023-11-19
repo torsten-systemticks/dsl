@@ -35,6 +35,7 @@ workspace "Name" "Description" {
             }
             perspectives {
                 "Security" "A description..."
+                "Technical Debt" "Tech debt is high due to delivering feature X rapidly." "High"
             }
         }
 
@@ -227,6 +228,10 @@ workspace "Name" "Description" {
             description "Description"
 
             user -> homePageController "Requests via web browser"
+            homePageController -> user {
+                url "https://structurizr.com"
+            }
+
             autoLayout
 
             properties {
@@ -334,6 +339,7 @@ workspace "Name" "Description" {
         }
 
         visibility public
+        scope softwaresystem
     }
 
 }
